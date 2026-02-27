@@ -39,6 +39,10 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok", service: SERVICE_NAME });
 });
 
-app.listen(PORT, () => {
-  logger.info({ port: PORT }, "Catalog service listening");
-});
+export { app };
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    logger.info({ port: PORT }, "Catalog service listening");
+  });
+}
