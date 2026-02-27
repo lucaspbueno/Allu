@@ -1,0 +1,26 @@
+/* Base layout - prepared for responsiveness (mobile in SUBFASE C) */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.app-footer {
+  padding: 1rem 0;
+  border-top: 1px solid #eee;
+  font-size: 0.875rem;
+  color: #666;
+}
