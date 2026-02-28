@@ -25,6 +25,7 @@ services:
       PORT: 3001
       LOG_LEVEL: info
       LOG_FILE: /var/log/app/catalog.log
+      DATABASE_URL: postgresql://allu:allu@postgres:5432/allu?schema=public
     volumes:
       - app_logs:/var/log/app
     depends_on:
@@ -64,6 +65,7 @@ services:
       PORT: 3003
       LOG_LEVEL: info
       LOG_FILE: /var/log/app/cart.log
+      DATABASE_URL: postgresql://allu:allu@postgres:5432/allu?schema=public
     volumes:
       - app_logs:/var/log/app
     depends_on:
