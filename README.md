@@ -52,6 +52,7 @@ Para evitar conflitos no monorepo, cada serviço gera o Prisma client em um dire
 | Serviço         | Output path                           | Import                          |
 | --------------- | ------------------------------------- | ------------------------------- |
 | catalog-service | `node_modules/.prisma/catalog-client` | `from ".prisma/catalog-client"` |
+| search-service  | `node_modules/.prisma/search-client`  | `from ".prisma/search-client"`  |
 | cart-service    | `node_modules/.prisma/cart-client`    | `from ".prisma/cart-client"`    |
 
 ## Desenvolvimento local
@@ -73,6 +74,8 @@ cd services/catalog-service && npm run dev
 ```bash
 cd services/search-service && npm run dev
 # http://localhost:3002/health
+# http://localhost:3002/search/suggestions?q=iphone&limit=5   (autocomplete)
+# http://localhost:3002/search/products?q=apple&page=1&limit=10
 # http://localhost:3002/api-docs
 ```
 
@@ -138,14 +141,16 @@ Cada serviço expõe a documentação OpenAPI 3.0 via Swagger UI no path `/api-d
 
 ### Endpoints documentados
 
-| Serviço | Endpoint               | Método | Descrição                                                |
-| ------- | ---------------------- | ------ | -------------------------------------------------------- |
-| Catalog | `/health`              | GET    | Health check                                             |
-| Catalog | `/products`            | GET    | Lista paginada — modo offset ou cursor; filtros variados |
-| Catalog | `/products/:id`        | GET    | Produto por ID numérico (400/404); cache em memória      |
-| Catalog | `/products/categories` | GET    | Categorias distintas ordenadas; cache em memória         |
-| Search  | `/health`              | GET    | Health check                                             |
-| Cart    | `/health`              | GET    | Health check                                             |
+| Serviço | Endpoint               | Método | Descrição                                                  |
+| ------- | ---------------------- | ------ | ---------------------------------------------------------- |
+| Catalog | `/health`              | GET    | Health check                                               |
+| Catalog | `/products`            | GET    | Lista paginada — modo offset ou cursor; filtros variados   |
+| Catalog | `/products/:id`        | GET    | Produto por ID numérico (400/404); cache em memória        |
+| Catalog | `/products/categories` | GET    | Categorias distintas ordenadas; cache em memória           |
+| Search  | `/health`              | GET    | Health check                                               |
+| Search  | `/search/suggestions`  | GET    | Autocomplete (q, limit 1–20); cache em memória             |
+| Search  | `/search/products`     | GET    | Busca em nome/descrição (q, page, limit); cache em memória |
+| Cart    | `/health`              | GET    | Health check                                               |
 
 #### Filtros e parâmetros de `GET /products`
 
@@ -173,15 +178,15 @@ Rodar todos os testes:
 npm test
 ```
 
-### Cobertura de testes (Etapa 3)
+### Cobertura de testes (Etapa 4)
 
 | Workspace       | Suites | Testes |
 | --------------- | ------ | ------ |
 | frontend        | 3      | 8      |
 | catalog-service | 5      | 55     |
-| search-service  | 1      | 1      |
+| search-service  | 4      | 23     |
 | cart-service    | 1      | 1      |
-| **Total**       | **10** | **65** |
+| **Total**       | **13** | **87** |
 
 ## Arquitetura de camadas (backend)
 
@@ -211,6 +216,16 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - Frontend com roteamento mínimo e layout responsivo (mobile-first).
 - Ver `docs/ETAPA1.md` para resumo da Etapa 1.
 
+## Notas da Etapa 2
+
+- Prisma integrado no catalog-service e cart-service com output isolado por serviço.
+- Modelo `Product` no catalog-service com seed de 10 produtos de exemplo.
+- Modelos `Cart` e `CartItem` no cart-service (schema pronto, endpoints nas próximas etapas).
+- Endpoints `GET /products` (paginação + filtro por categoria) e `GET /products/:id` implementados.
+- Camadas repository → service → routes com injeção de dependência para testabilidade.
+- 31 testes passando (21 no catalog, 8 no frontend, 1 search, 1 cart).
+- Ver `docs/ETAPA2.md` para resumo da Etapa 2.
+
 ## Notas da Etapa 3
 
 - Cache em memória (`SimpleCache`) com TTL configurável via `CACHE_TTL_MS` (padrão 60s).
@@ -221,12 +236,10 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - 65 testes passando (55 no catalog-service, incluindo testes de cache).
 - Ver `docs/ETAPA3.md` para resumo da Etapa 3.
 
-## Notas da Etapa 2
+## Notas da Etapa 4
 
-- Prisma integrado no catalog-service e cart-service com output isolado por serviço.
-- Modelo `Product` no catalog-service com seed de 10 produtos de exemplo.
-- Modelos `Cart` e `CartItem` no cart-service (schema pronto, endpoints nas próximas etapas).
-- Endpoints `GET /products` (paginação + filtro por categoria) e `GET /products/:id` implementados.
-- Camadas repository → service → routes com injeção de dependência para testabilidade.
-- 31 testes passando (21 no catalog, 8 no frontend, 1 search, 1 cart).
-- Ver `docs/ETAPA2.md` para resumo da Etapa 2.
+- Search-service com Prisma (leitura da tabela Product), output `.prisma/search-client`.
+- `GET /search/suggestions?q=&limit=` — autocomplete com ordenação por relevância (exata > startsWith > contains); cache em memória.
+- `GET /search/products?q=&page=&limit=` — busca full-text em nome e descrição; resultado paginado e cacheado.
+- 87 testes passando (23 no search-service: repository, service, routes).
+- Ver `docs/ETAPA4.md` para resumo da Etapa 4.
