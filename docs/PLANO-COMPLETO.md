@@ -151,9 +151,9 @@ npm run build
 - [x] SUBFASE D
 - [x] SUBFASE E
 
-### ETAPA 4 — Busca (autocomplete + fuzzy) + endpoints **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
+### ETAPA 4 — Busca (autocomplete + fuzzy) + endpoints
 
-- [ ] SUBFASE A
+- [x] SUBFASE A
 - [ ] SUBFASE B
 - [ ] SUBFASE C
 - [ ] SUBFASE D
