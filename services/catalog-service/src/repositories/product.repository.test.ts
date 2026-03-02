@@ -69,22 +69,33 @@ describe("ProductRepository", () => {
   });
 
   describe("findById", () => {
-    it("retorna produto quando encontrado", async () => {
-      mockedPrisma.product.findUnique.mockResolvedValue(fakeProduto);
+    it("retorna produto ativo quando encontrado", async () => {
+      mockedPrisma.product.findFirst.mockResolvedValue(fakeProduto);
 
       const result = await repository.findById(1);
 
-      expect(mockedPrisma.product.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
+      expect(mockedPrisma.product.findFirst).toHaveBeenCalledWith({
+        where: { id: 1, active: true },
       });
       expect(result).toEqual(fakeProduto);
     });
 
-    it("retorna null quando não encontrado", async () => {
-      mockedPrisma.product.findUnique.mockResolvedValue(null);
+    it("retorna null quando produto não encontrado", async () => {
+      mockedPrisma.product.findFirst.mockResolvedValue(null);
 
       const result = await repository.findById(999);
 
+      expect(result).toBeNull();
+    });
+
+    it("retorna null para produto inativo", async () => {
+      mockedPrisma.product.findFirst.mockResolvedValue(null);
+
+      const result = await repository.findById(1);
+
+      expect(mockedPrisma.product.findFirst).toHaveBeenCalledWith({
+        where: { id: 1, active: true },
+      });
       expect(result).toBeNull();
     });
   });

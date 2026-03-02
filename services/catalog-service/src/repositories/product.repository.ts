@@ -24,7 +24,7 @@ export class ProductRepository {
   }
 
   async findById(id: number): Promise<Product | null> {
-    return prisma.product.findUnique({ where: { id } });
+    return prisma.product.findFirst({ where: { id, active: true } });
   }
 
   async count(category?: string): Promise<number> {
