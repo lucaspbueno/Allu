@@ -1,4 +1,4 @@
-import { Product } from "@prisma/client";
+import { Product } from ".prisma/catalog-client";
 import { ProductRepository, FindAllOptions } from "../repositories/product.repository";
 
 export interface PaginatedResult<T> {
@@ -34,7 +34,7 @@ export class ProductService {
     };
   }
 
-  async getById(id: string): Promise<Product | null> {
+  async getById(id: number): Promise<Product | null> {
     return this.repository.findById(id);
   }
 }

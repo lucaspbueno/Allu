@@ -82,7 +82,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": { "type": "integer" }
           }
         ],
         "responses": {
@@ -116,7 +116,7 @@
       "Product": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
+          "id": { "type": "integer", "example": 1 },
           "name": { "type": "string", "example": "iPhone 15 Pro" },
           "description": { "type": "string" },
           "price": { "type": "string", "example": "219.90" },

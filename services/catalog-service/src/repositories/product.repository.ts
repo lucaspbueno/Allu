@@ -1,4 +1,4 @@
-import { Product, Prisma } from "@prisma/client";
+import { Product, Prisma } from ".prisma/catalog-client";
 import { prisma } from "../lib/prisma";
 
 export interface FindAllOptions {
@@ -23,7 +23,7 @@ export class ProductRepository {
     });
   }
 
-  async findById(id: string): Promise<Product | null> {
+  async findById(id: number): Promise<Product | null> {
     return prisma.product.findUnique({ where: { id } });
   }
 
