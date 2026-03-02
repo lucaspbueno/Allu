@@ -154,7 +154,7 @@ npm run build
 ### ETAPA 4 — Busca (autocomplete + fuzzy) + endpoints
 
 - [x] SUBFASE A
-- [ ] SUBFASE B
+- [x] SUBFASE B
 - [ ] SUBFASE C
 - [ ] SUBFASE D
 - [ ] SUBFASE E
