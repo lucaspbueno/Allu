@@ -143,9 +143,9 @@ npm run build
 - [x] SUBFASE D — Gates passando (31 testes, lint, format, build OK)
 - [x] SUBFASE E — Documentação (OpenAPI, README, docs/ETAPA2.md)
 
-### ETAPA 3 — Catálogo (paginação/cursor + cache) + endpoints **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
+### ETAPA 3 — Catálogo (paginação/cursor + cache) + endpoints
 
-- [ ] SUBFASE A
+- [x] SUBFASE A
 - [ ] SUBFASE B
 - [ ] SUBFASE C
 - [ ] SUBFASE D
