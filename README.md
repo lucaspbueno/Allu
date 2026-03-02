@@ -61,9 +61,13 @@ Para evitar conflitos no monorepo, cada serviço gera o Prisma client em um dire
 ```bash
 cd services/catalog-service && npm run dev
 # http://localhost:3001/health
-# http://localhost:3001/products      (lista paginada)
-# http://localhost:3001/products/1    (produto por ID)
-# http://localhost:3001/api-docs      (Swagger)
+# http://localhost:3001/products                              (lista paginada)
+# http://localhost:3001/products?search=mac&sortBy=price&order=asc
+# http://localhost:3001/products?minPrice=50&maxPrice=300
+# http://localhost:3001/products?cursor=5&limit=3            (modo cursor)
+# http://localhost:3001/products/1                           (produto por ID)
+# http://localhost:3001/products/categories                  (categorias)
+# http://localhost:3001/api-docs                             (Swagger)
 ```
 
 ```bash
@@ -134,13 +138,28 @@ Cada serviço expõe a documentação OpenAPI 3.0 via Swagger UI no path `/api-d
 
 ### Endpoints documentados
 
-| Serviço | Endpoint        | Método | Descrição                                     |
-| ------- | --------------- | ------ | --------------------------------------------- |
-| Catalog | `/health`       | GET    | Health check                                  |
-| Catalog | `/products`     | GET    | Lista paginada (query: page, limit, category) |
-| Catalog | `/products/:id` | GET    | Produto por ID numérico (400/404)             |
-| Search  | `/health`       | GET    | Health check                                  |
-| Cart    | `/health`       | GET    | Health check                                  |
+| Serviço | Endpoint               | Método | Descrição                                                |
+| ------- | ---------------------- | ------ | -------------------------------------------------------- |
+| Catalog | `/health`              | GET    | Health check                                             |
+| Catalog | `/products`            | GET    | Lista paginada — modo offset ou cursor; filtros variados |
+| Catalog | `/products/:id`        | GET    | Produto por ID numérico (400/404); cache em memória      |
+| Catalog | `/products/categories` | GET    | Categorias distintas ordenadas; cache em memória         |
+| Search  | `/health`              | GET    | Health check                                             |
+| Cart    | `/health`              | GET    | Health check                                             |
+
+#### Filtros e parâmetros de `GET /products`
+
+| Parâmetro  | Tipo    | Descrição                                    |
+| ---------- | ------- | -------------------------------------------- |
+| `page`     | integer | Página (offset, padrão 1)                    |
+| `limit`    | integer | Itens por página 1–100 (padrão 20)           |
+| `cursor`   | integer | ID do último item — ativa modo cursor        |
+| `category` | string  | Filtra por categoria exata                   |
+| `search`   | string  | Busca parcial por nome (case-insensitive)    |
+| `minPrice` | number  | Preço mínimo inclusive                       |
+| `maxPrice` | number  | Preço máximo inclusive                       |
+| `sortBy`   | string  | `name` \| `price` \| `createdAt` (só offset) |
+| `order`    | string  | `asc` \| `desc` (só offset, padrão `desc`)   |
 
 ## Testes
 
@@ -154,15 +173,15 @@ Rodar todos os testes:
 npm test
 ```
 
-### Cobertura de testes (Etapa 2)
+### Cobertura de testes (Etapa 3)
 
 | Workspace       | Suites | Testes |
 | --------------- | ------ | ------ |
 | frontend        | 3      | 8      |
-| catalog-service | 4      | 21     |
+| catalog-service | 5      | 55     |
 | search-service  | 1      | 1      |
 | cart-service    | 1      | 1      |
-| **Total**       | **9**  | **31** |
+| **Total**       | **10** | **65** |
 
 ## Arquitetura de camadas (backend)
 
@@ -191,6 +210,16 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - Health checks e Swagger stub em cada serviço; logging estruturado com pino.
 - Frontend com roteamento mínimo e layout responsivo (mobile-first).
 - Ver `docs/ETAPA1.md` para resumo da Etapa 1.
+
+## Notas da Etapa 3
+
+- Cache em memória (`SimpleCache`) com TTL configurável via `CACHE_TTL_MS` (padrão 60s).
+- Paginação por cursor: passe `cursor=<id>` para navegar sem drift de offset.
+- Novos filtros em `GET /products`: `search` (ILIKE), `minPrice`, `maxPrice`, `sortBy`, `order`.
+- Novo endpoint `GET /products/categories`: lista categorias ativas ordenadas alfabeticamente.
+- `deletedAt: null` adicionado a todas as queries (suporte completo a soft delete).
+- 65 testes passando (55 no catalog-service, incluindo testes de cache).
+- Ver `docs/ETAPA3.md` para resumo da Etapa 3.
 
 ## Notas da Etapa 2
 

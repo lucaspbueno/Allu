@@ -22,6 +22,8 @@ const fakeProduto = {
   deletedAt: null,
 };
 
+const fakeProduto2 = { ...fakeProduto, id: 2, name: "MacBook Air M3", category: "Notebooks" };
+
 describe("ProductRepository", () => {
   let repository: ProductRepository;
 
@@ -31,13 +33,13 @@ describe("ProductRepository", () => {
   });
 
   describe("findAll", () => {
-    it("retorna lista de produtos ativos com paginação padrão", async () => {
+    it("retorna lista de produtos ativos com filtros padrão", async () => {
       mockedPrisma.product.findMany.mockResolvedValue([fakeProduto]);
 
       const result = await repository.findAll();
 
       expect(mockedPrisma.product.findMany).toHaveBeenCalledWith({
-        where: { active: true },
+        where: { active: true, deletedAt: null },
         skip: 0,
         take: 20,
         orderBy: { createdAt: "desc" },
@@ -52,8 +54,46 @@ describe("ProductRepository", () => {
 
       expect(mockedPrisma.product.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { active: true, category: "Notebooks" },
+          where: { active: true, deletedAt: null, category: "Notebooks" },
         })
+      );
+    });
+
+    it("filtra por nome com busca parcial (case-insensitive) quando search informado", async () => {
+      mockedPrisma.product.findMany.mockResolvedValue([]);
+
+      await repository.findAll({ search: "iphone" });
+
+      expect(mockedPrisma.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            name: { contains: "iphone", mode: "insensitive" },
+          }),
+        })
+      );
+    });
+
+    it("aplica filtro de preço mínimo e máximo", async () => {
+      mockedPrisma.product.findMany.mockResolvedValue([]);
+
+      await repository.findAll({ minPrice: 50, maxPrice: 300 });
+
+      expect(mockedPrisma.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            price: { gte: 50, lte: 300 },
+          }),
+        })
+      );
+    });
+
+    it("ordena por campo e direção personalizados", async () => {
+      mockedPrisma.product.findMany.mockResolvedValue([]);
+
+      await repository.findAll({ sortBy: "price", order: "asc" });
+
+      expect(mockedPrisma.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ orderBy: { price: "asc" } })
       );
     });
 
@@ -68,6 +108,41 @@ describe("ProductRepository", () => {
     });
   });
 
+  describe("findAllCursor", () => {
+    it("retorna itens, nextCursor e hasMore=true quando há mais itens", async () => {
+      mockedPrisma.product.findMany.mockResolvedValue([fakeProduto, fakeProduto2]);
+
+      const result = await repository.findAllCursor({ take: 1 });
+
+      expect(result.hasMore).toBe(true);
+      expect(result.items).toHaveLength(1);
+      expect(result.nextCursor).toBe(fakeProduto.id);
+    });
+
+    it("retorna hasMore=false e nextCursor=null quando não há mais itens", async () => {
+      mockedPrisma.product.findMany.mockResolvedValue([fakeProduto]);
+
+      const result = await repository.findAllCursor({ take: 5 });
+
+      expect(result.hasMore).toBe(false);
+      expect(result.nextCursor).toBeNull();
+      expect(result.items).toHaveLength(1);
+    });
+
+    it("passa cursor e skip=1 ao Prisma quando cursor é informado", async () => {
+      mockedPrisma.product.findMany.mockResolvedValue([]);
+
+      await repository.findAllCursor({ take: 5, cursor: 3 });
+
+      expect(mockedPrisma.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cursor: { id: 3 },
+          skip: 1,
+        })
+      );
+    });
+  });
+
   describe("findById", () => {
     it("retorna produto ativo quando encontrado", async () => {
       mockedPrisma.product.findFirst.mockResolvedValue(fakeProduto);
@@ -75,7 +150,7 @@ describe("ProductRepository", () => {
       const result = await repository.findById(1);
 
       expect(mockedPrisma.product.findFirst).toHaveBeenCalledWith({
-        where: { id: 1, active: true },
+        where: { id: 1, active: true, deletedAt: null },
       });
       expect(result).toEqual(fakeProduto);
     });
@@ -88,13 +163,13 @@ describe("ProductRepository", () => {
       expect(result).toBeNull();
     });
 
-    it("retorna null para produto inativo", async () => {
+    it("retorna null para produto inativo ou deletado", async () => {
       mockedPrisma.product.findFirst.mockResolvedValue(null);
 
       const result = await repository.findById(1);
 
       expect(mockedPrisma.product.findFirst).toHaveBeenCalledWith({
-        where: { id: 1, active: true },
+        where: { id: 1, active: true, deletedAt: null },
       });
       expect(result).toBeNull();
     });
@@ -107,7 +182,7 @@ describe("ProductRepository", () => {
       const result = await repository.count();
 
       expect(mockedPrisma.product.count).toHaveBeenCalledWith({
-        where: { active: true },
+        where: { active: true, deletedAt: null },
       });
       expect(result).toBe(10);
     });
@@ -115,12 +190,46 @@ describe("ProductRepository", () => {
     it("filtra contagem por categoria", async () => {
       mockedPrisma.product.count.mockResolvedValue(3);
 
-      const result = await repository.count("Acessórios");
+      const result = await repository.count({ category: "Acessórios" });
 
       expect(mockedPrisma.product.count).toHaveBeenCalledWith({
-        where: { active: true, category: "Acessórios" },
+        where: { active: true, deletedAt: null, category: "Acessórios" },
       });
       expect(result).toBe(3);
+    });
+
+    it("filtra contagem com search e faixa de preço", async () => {
+      mockedPrisma.product.count.mockResolvedValue(2);
+
+      await repository.count({ search: "apple", minPrice: 100 });
+
+      expect(mockedPrisma.product.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            name: { contains: "apple", mode: "insensitive" },
+            price: { gte: 100 },
+          }),
+        })
+      );
+    });
+  });
+
+  describe("findCategories", () => {
+    it("retorna lista de categorias distintas e ordenadas", async () => {
+      mockedPrisma.product.groupBy.mockResolvedValue([
+        { category: "Acessórios" },
+        { category: "Notebooks" },
+        { category: "Smartphones" },
+      ] as never);
+
+      const result = await repository.findCategories();
+
+      expect(mockedPrisma.product.groupBy).toHaveBeenCalledWith({
+        by: ["category"],
+        where: { active: true, deletedAt: null },
+        orderBy: { category: "asc" },
+      });
+      expect(result).toEqual(["Acessórios", "Notebooks", "Smartphones"]);
     });
   });
 });

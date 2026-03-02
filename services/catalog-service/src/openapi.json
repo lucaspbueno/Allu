@@ -2,13 +2,14 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Catalog Service API",
-    "version": "0.2.0",
-    "description": "Serviço de catálogo de produtos com Prisma + Postgres. Fornece listagem paginada, filtro por categoria e consulta por ID."
+    "version": "0.3.0",
+    "description": "Serviço de catálogo de produtos com Prisma + Postgres. Suporta listagem paginada (offset e cursor), filtros por categoria, busca por nome, faixa de preço, ordenação e cache em memória."
   },
   "servers": [{ "url": "http://localhost:3001", "description": "Local dev" }],
   "tags": [
     { "name": "Health", "description": "Verificação de saúde do serviço" },
-    { "name": "Products", "description": "Operações sobre o catálogo de produtos" }
+    { "name": "Products", "description": "Operações sobre o catálogo de produtos" },
+    { "name": "Categories", "description": "Categorias disponíveis no catálogo" }
   ],
   "paths": {
     "/health": {
@@ -37,50 +38,84 @@
     "/products": {
       "get": {
         "summary": "Listar produtos",
-        "description": "Retorna uma lista paginada de produtos ativos. Suporta filtro por categoria.",
+        "description": "Retorna produtos ativos com suporte a dois modos de paginação:\n\n- **Offset** (padrão): use `page` + `limit`. Retorna `total`, `totalPages`, `page`.\n- **Cursor**: passe `cursor` (ID do último item recebido). Retorna `nextCursor`, `hasMore`. Mais eficiente para grandes volumes.\n\nAmbos os modos aceitam os filtros `category`, `search`, `minPrice` e `maxPrice`.\nO modo offset também aceita `sortBy` e `order`.",
         "tags": ["Products"],
         "operationId": "listProducts",
         "parameters": [
           {
             "name": "page",
             "in": "query",
-            "description": "Número da página (começa em 1)",
+            "description": "Número da página — modo offset (ignorado quando `cursor` é informado)",
             "schema": { "type": "integer", "default": 1, "minimum": 1 }
           },
           {
             "name": "limit",
             "in": "query",
-            "description": "Quantidade de itens por página (1–100)",
+            "description": "Itens por página (1–100)",
             "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "ID do último item recebido — ativa o modo cursor. Use `nextCursor` da resposta anterior.",
+            "schema": { "type": "integer" }
           },
           {
             "name": "category",
             "in": "query",
-            "description": "Filtrar por categoria (ex.: Smartphones, Notebooks)",
+            "description": "Filtrar por categoria exata (ex.: Smartphones, Notebooks)",
             "schema": { "type": "string" }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Busca parcial por nome do produto (case-insensitive)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "Preço mínimo (inclusive)",
+            "schema": { "type": "number", "format": "float" }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "Preço máximo (inclusive)",
+            "schema": { "type": "number", "format": "float" }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Campo de ordenação — apenas no modo offset",
+            "schema": { "type": "string", "enum": ["name", "price", "createdAt"] }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Direção da ordenação — apenas no modo offset",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" }
           }
         ],
         "responses": {
           "200": {
-            "description": "Lista paginada de produtos",
+            "description": "Lista de produtos (formato varia conforme o modo de paginação)",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/Product" }
-                    },
-                    "total": {
-                      "type": "integer",
-                      "description": "Total de produtos que satisfazem o filtro"
-                    },
-                    "page": { "type": "integer" },
-                    "limit": { "type": "integer" },
-                    "totalPages": { "type": "integer" }
-                  }
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/PaginatedProducts" },
+                    { "$ref": "#/components/schemas/CursorPaginatedProducts" }
+                  ]
                 }
+              }
+            }
+          },
+          "400": {
+            "description": "Parâmetro inválido (minPrice, maxPrice ou cursor não numérico)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
               }
             }
           }
@@ -90,7 +125,7 @@
     "/products/{id}": {
       "get": {
         "summary": "Obter produto por ID",
-        "description": "Retorna os detalhes de um produto específico pelo seu ID numérico.",
+        "description": "Retorna os detalhes de um produto pelo ID numérico. Resultado cacheado em memória.",
         "tags": ["Products"],
         "operationId": "getProductById",
         "parameters": [
@@ -129,6 +164,33 @@
           }
         }
       }
+    },
+    "/products/categories": {
+      "get": {
+        "summary": "Listar categorias",
+        "description": "Retorna todas as categorias distintas de produtos ativos, ordenadas alfabeticamente. Resultado cacheado em memória.",
+        "tags": ["Categories"],
+        "operationId": "listCategories",
+        "responses": {
+          "200": {
+            "description": "Lista de categorias",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Acessórios", "Notebooks", "Smartphones", "Tablets", "Wearables"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -138,7 +200,10 @@
         "properties": {
           "id": { "type": "integer", "example": 1 },
           "name": { "type": "string", "example": "iPhone 15 Pro" },
-          "description": { "type": "string", "example": "Smartphone Apple com chip A17 Pro" },
+          "description": {
+            "type": "string",
+            "example": "Smartphone Apple com chip A17 Pro"
+          },
           "price": { "type": "string", "format": "decimal", "example": "219.90" },
           "imageUrl": {
             "type": "string",
@@ -150,6 +215,41 @@
           "active": { "type": "boolean", "example": true },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PaginatedProducts": {
+        "type": "object",
+        "description": "Resposta do modo offset (page + limit)",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total de produtos que satisfazem os filtros",
+            "example": 10
+          },
+          "page": { "type": "integer", "example": 1 },
+          "limit": { "type": "integer", "example": 20 },
+          "totalPages": { "type": "integer", "example": 1 }
+        }
+      },
+      "CursorPaginatedProducts": {
+        "type": "object",
+        "description": "Resposta do modo cursor",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          },
+          "nextCursor": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID do último item — passe como `cursor` na próxima requisição. null indica última página.",
+            "example": 15
+          },
+          "hasMore": { "type": "boolean", "example": true }
         }
       },
       "Error": {
