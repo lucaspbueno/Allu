@@ -7,6 +7,7 @@
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
+    "pretest": "prisma generate",
     "test": "jest",
     "build": "prisma generate && tsc",
     "prisma:migrate": "dotenv -e ../../.env -- prisma migrate dev",

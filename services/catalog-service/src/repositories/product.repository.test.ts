@@ -1,10 +1,12 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import { prisma } from "../lib/prisma";
+import type { DeepMockProxy } from "jest-mock-extended";
+import type { PrismaClient } from ".prisma/catalog-client";
 import { ProductRepository } from "./product.repository";
 
 jest.mock("../lib/prisma");
 
-const mockedPrisma = prisma as jest.Mocked<typeof prisma>;
+const mockedPrisma = prisma as DeepMockProxy<PrismaClient>;
 
 const fakeProduto = {
   id: 1,
