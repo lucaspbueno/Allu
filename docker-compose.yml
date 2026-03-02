@@ -47,8 +47,12 @@ services:
       PORT: ${SEARCH_PORT}
       LOG_LEVEL: ${LOG_LEVEL}
       LOG_FILE: /var/log/app/search.log
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     volumes:
       - app_logs:/var/log/app
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${SEARCH_PORT}/health"]
       interval: 10s
