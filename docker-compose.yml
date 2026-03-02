@@ -2,15 +2,15 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: allu
-      POSTGRES_PASSWORD: allu
-      POSTGRES_DB: allu
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U allu"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -20,18 +20,19 @@ services:
       context: .
       dockerfile: services/catalog-service/Dockerfile
     ports:
-      - "3001:3001"
+      - "${CATALOG_PORT}:${CATALOG_PORT}"
     environment:
-      PORT: 3001
-      LOG_LEVEL: info
+      PORT: ${CATALOG_PORT}
+      LOG_LEVEL: ${LOG_LEVEL}
       LOG_FILE: /var/log/app/catalog.log
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     volumes:
       - app_logs:/var/log/app
     depends_on:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3001/health"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${CATALOG_PORT}/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -41,15 +42,15 @@ services:
       context: .
       dockerfile: services/search-service/Dockerfile
     ports:
-      - "3002:3002"
+      - "${SEARCH_PORT}:${SEARCH_PORT}"
     environment:
-      PORT: 3002
-      LOG_LEVEL: info
+      PORT: ${SEARCH_PORT}
+      LOG_LEVEL: ${LOG_LEVEL}
       LOG_FILE: /var/log/app/search.log
     volumes:
       - app_logs:/var/log/app
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3002/health"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${SEARCH_PORT}/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -59,18 +60,19 @@ services:
       context: .
       dockerfile: services/cart-service/Dockerfile
     ports:
-      - "3003:3003"
+      - "${CART_PORT}:${CART_PORT}"
     environment:
-      PORT: 3003
-      LOG_LEVEL: info
+      PORT: ${CART_PORT}
+      LOG_LEVEL: ${LOG_LEVEL}
       LOG_FILE: /var/log/app/cart.log
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     volumes:
       - app_logs:/var/log/app
     depends_on:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3003/health"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${CART_PORT}/health"]
       interval: 10s
       timeout: 5s
       retries: 3
