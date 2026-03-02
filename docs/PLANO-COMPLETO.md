@@ -91,6 +91,7 @@ src/
 - SUBFASE C: `feat(frontend)`/`refactor(frontend)` (responsividade)
 - SUBFASE D: `fix`/`chore` (ajustes para gates passarem)
 - SUBFASE E: `docs`
+- **Idioma:** As mensagens dos commits sugeridos no resumo final de cada subfase devem estar em **português (pt-BR)**.
 
 ## FLUXO POR ETAPA (GATED)
 
@@ -119,7 +120,7 @@ npm run build
 2. Arquivos criados/alterados (paths)
 3. Conteúdo completo dos arquivos-chave (quando aplicável)
 4. Como validar localmente (comandos exatos)
-5. Commits sugeridos (mensagens exatas + ordem)
+5. Commits sugeridos (mensagens exatas + ordem, em pt-BR)
 6. Assumptions / Trade-offs
 7. Aguardando comando: "APROVAR SUBFASE X"
 
