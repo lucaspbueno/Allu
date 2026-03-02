@@ -146,7 +146,7 @@ npm run build
 ### ETAPA 3 — Catálogo (paginação/cursor + cache) + endpoints
 
 - [x] SUBFASE A
-- [ ] SUBFASE B
+- [x] SUBFASE B
 - [ ] SUBFASE C
 - [ ] SUBFASE D
 - [ ] SUBFASE E
