@@ -149,9 +149,9 @@ npm run build
 - [x] SUBFASE B
 - [x] SUBFASE C
 - [x] SUBFASE D
-- [ ] SUBFASE E
+- [x] SUBFASE E
 
-### ETAPA 4 — Busca (autocomplete + fuzzy) + endpoints
+### ETAPA 4 — Busca (autocomplete + fuzzy) + endpoints **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
 
 - [ ] SUBFASE A
 - [ ] SUBFASE B
@@ -258,10 +258,10 @@ As migrations Prisma ainda não foram executadas (`prisma migrate dev`). Requere
 
 Cole o prompt principal (regras do desafio + fluxo GATED + commits) junto com este plano e diga:
 
-> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 3 — SUBFASE A** (IMPLEMENTAR)."
+> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 4 — SUBFASE A** (IMPLEMENTAR)."
 
 O próximo chat deve:
 
 1. Ler `docs/PLANO-COMPLETO.md` para contexto completo
-2. Executar a SUBFASE A da ETAPA 3 (Catálogo avançado: paginação por cursor, cache, filtros adicionais)
+2. Executar a SUBFASE A da ETAPA 4 (Busca: autocomplete + fuzzy no search-service)
 3. Seguir o fluxo GATED normalmente (A → B → C → D → E)
