@@ -159,10 +159,7 @@ describe("GET /products com cursor", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.hasMore).toBe(false);
-    expect(mockService.listCursor).toHaveBeenCalledWith(
-      3,
-      expect.objectContaining({ cursor: 5 })
-    );
+    expect(mockService.listCursor).toHaveBeenCalledWith(3, expect.objectContaining({ cursor: 5 }));
   });
 
   it("retorna 400 para cursor não numérico", async () => {
