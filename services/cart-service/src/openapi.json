@@ -2,16 +2,23 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Cart Service API",
-    "version": "0.1.0",
-    "description": "Shopping cart service"
+    "version": "0.2.0",
+    "description": "Serviço de carrinho de compras com Prisma + Postgres. Gerencia carrinhos por sessão com itens vinculados a produtos do catálogo."
   },
+  "servers": [{ "url": "http://localhost:3003", "description": "Local dev" }],
+  "tags": [
+    { "name": "Health", "description": "Verificação de saúde do serviço" },
+    { "name": "Cart", "description": "Operações sobre o carrinho de compras (endpoints futuros)" }
+  ],
   "paths": {
     "/health": {
       "get": {
         "summary": "Health check",
+        "tags": ["Health"],
+        "operationId": "getHealth",
         "responses": {
           "200": {
-            "description": "Service is healthy",
+            "description": "Serviço operacional",
             "content": {
               "application/json": {
                 "schema": {
@@ -24,6 +31,44 @@
               }
             }
           }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cart": {
+        "type": "object",
+        "description": "Carrinho de compras associado a uma sessão",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "sessionId": { "type": "string", "example": "sess_abc123" },
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CartItem" }
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CartItem": {
+        "type": "object",
+        "description": "Item dentro de um carrinho",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "cartId": { "type": "integer", "example": 1 },
+          "productId": { "type": "integer", "example": 3 },
+          "name": { "type": "string", "example": "MacBook Air M3" },
+          "price": { "type": "string", "format": "decimal", "example": "349.90" },
+          "quantity": { "type": "integer", "example": 2 },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "Carrinho não encontrado" }
         }
       }
     }
