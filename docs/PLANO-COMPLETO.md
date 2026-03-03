@@ -200,17 +200,17 @@ npm run build
 - [x] SUBFASE D — Gates (lint, format:check, test, build) — todos passando
 - [x] SUBFASE E — README, docs/ETAPA9.md, plano atualizado
 
-### ETAPA 10 — CI + endurecimento + README final + docs consolidadas **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
+### ETAPA 10 — CI + endurecimento + README final + docs consolidadas (CONCLUÍDA)
 
-- [ ] SUBFASE A
-- [ ] SUBFASE B
-- [ ] SUBFASE C
-- [ ] SUBFASE D
-- [ ] SUBFASE E
+- [x] SUBFASE A — GitHub Actions (ci.yml), .nvmrc, seção CI no README
+- [x] SUBFASE B — scripts/validate-workflow.cjs, passo no pipeline, script validate:workflow
+- [x] SUBFASE C — Subseção "Frontend — Mobile e acessibilidade" no README
+- [x] SUBFASE D — Gates (lint, format:check, test, build) — todos passando
+- [x] SUBFASE E — README (validate:workflow, Notas Etapa 10), docs/ETAPA10.md, plano atualizado
 
 ---
 
-## ESTADO ATUAL DO CÓDIGO (ao final da Etapa 9)
+## ESTADO ATUAL DO CÓDIGO (ao final da Etapa 10 — DESAFIO CONCLUÍDO)
 
 ### Testes: 203 passando
 
@@ -255,14 +255,14 @@ As migrations Prisma ainda não foram executadas (`prisma migrate dev`). Requere
 
 ---
 
-## INSTRUÇÕES PARA O PRÓXIMO CHAT
+## CONCLUSÃO DO DESAFIO
 
-Cole o prompt principal (regras do desafio + fluxo GATED + commits) junto com este plano e diga:
+Todas as 10 etapas do Desafio Técnico Allu foram concluídas. O repositório contém:
 
-> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 10 — SUBFASE A** (IMPLEMENTAR)."
+- Monorepo (apps/frontend, services/catalog-service, search-service, cart-service)
+- Frontend: React + Vite, rotas Home, Catalog, Search, Produto, Cart; mobile-first; 203 testes no total (92 no frontend)
+- Backend: três microsserviços com Prisma, camadas repository/service/routes, Swagger/OpenAPI
+- CI: GitHub Actions em `.github/workflows/ci.yml` (lint, format:check, test, build)
+- Documentação: README, docs/ETAPA1.md a docs/ETAPA10.md, docs/PLANO-COMPLETO.md
 
-O próximo chat deve:
-
-1. Ler `docs/PLANO-COMPLETO.md` para contexto completo
-2. Executar a SUBFASE A da ETAPA 10 (CI + endurecimento + README final + docs consolidadas)
-3. Seguir o fluxo GATED normalmente (A → B → C → D → E)
+Não há etapa 11. Para manutenção ou evolução, use o README e os docs por etapa como referência.
