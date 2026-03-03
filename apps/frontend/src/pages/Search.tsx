@@ -60,18 +60,27 @@ export default function Search() {
   };
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
+    function isOutsideInputAndDropdown(target: EventTarget | null) {
+      const node = target as Node | null;
+      return (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
+        !dropdownRef.current.contains(node) &&
         inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
+        !inputRef.current.contains(node)
+      );
+    }
+    function handleClickOutside(event: MouseEvent) {
+      if (isOutsideInputAndDropdown(event.target)) setDropdownOpen(false);
+    }
+    function handleTouchOutside(event: TouchEvent) {
+      if (isOutsideInputAndDropdown(event.target)) setDropdownOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleTouchOutside, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleTouchOutside);
+    };
   }, []);
 
   return (
