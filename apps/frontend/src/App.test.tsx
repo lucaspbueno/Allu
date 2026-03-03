@@ -2,7 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "./App";
 
-jest.mock("@/config/api", () => ({ CATALOG_API_BASE: "http://localhost:3001" }));
+jest.mock("@/config/api", () => ({
+  CATALOG_API_BASE: "http://localhost:3001",
+  SEARCH_API_BASE: "http://localhost:3002",
+}));
 
 function renderWithRouter() {
   return render(

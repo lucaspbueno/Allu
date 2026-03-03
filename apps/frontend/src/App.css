@@ -227,6 +227,143 @@ body {
   pointer-events: none;
 }
 
+/* Search page */
+.search-page {
+  width: 100%;
+}
+
+.search-page__title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.search-form__wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-form__input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search-form__input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-color: #2563eb;
+}
+
+.search-form__submit {
+  padding: 0.625rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #fff;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 8px;
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+.search-form__submit:hover {
+  background-color: #1d4ed8;
+}
+
+.search-form__submit:active {
+  background-color: #1e40af;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.search-dropdown__loading,
+.search-dropdown__empty {
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  color: #6b7280;
+}
+
+.search-dropdown__item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.search-dropdown__item:last-child {
+  border-bottom: none;
+}
+
+.search-dropdown__item:hover {
+  background-color: #f9fafb;
+}
+
+.search-dropdown__item-name {
+  font-weight: 500;
+  color: #111;
+}
+
+.search-dropdown__item-category {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.search-page__error {
+  color: #b91c1c;
+  margin: 0 0 1rem;
+}
+
+.search-page__loading,
+.search-page__meta,
+.search-page__hint {
+  margin: 0 0 1rem;
+  font-size: 0.9375rem;
+  color: #666;
+}
+
+@media (min-width: 768px) {
+  .search-page__title {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
 @media (min-width: 768px) {
   .catalog-grid {
     grid-template-columns: repeat(2, 1fr);
