@@ -168,15 +168,15 @@ npm run build
 - [x] SUBFASE D
 - [x] SUBFASE E
 
-### ETAPA 6 — Frontend: Catálogo (infinite scroll + cache client-side) **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
+### ETAPA 6 — Frontend: Catálogo (infinite scroll + cache client-side) (CONCLUÍDA)
 
-- [ ] SUBFASE A
-- [ ] SUBFASE B
-- [ ] SUBFASE C
-- [ ] SUBFASE D
-- [ ] SUBFASE E
+- [x] SUBFASE A — Página Catalog, useCatalogInfinite, api/catalog, rota /catalog, nav
+- [x] SUBFASE B — Testes: api/catalog, useCatalogInfinite, Catalog (pt-BR)
+- [x] SUBFASE C — Safe area, touch targets, infinite scroll mobile (rootMargin 200px)
+- [x] SUBFASE D — Gates (lint, format:check, test, build); fix tipo mock Catalog.test
+- [x] SUBFASE E — README, docs/ETAPA6.md, plano atualizado
 
-### ETAPA 7 — Frontend: Busca (autocomplete + fuzzy UX)
+### ETAPA 7 — Frontend: Busca (autocomplete + fuzzy UX) **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
 
 - [ ] SUBFASE A
 - [ ] SUBFASE B
@@ -210,16 +210,16 @@ npm run build
 
 ---
 
-## ESTADO ATUAL DO CÓDIGO (ao final da Etapa 2, Subfase D)
+## ESTADO ATUAL DO CÓDIGO (ao final da Etapa 6)
 
-### Testes: 31 passando
+### Testes: 132 passando
 
 | Workspace       | Suites | Testes |
 | --------------- | ------ | ------ |
-| frontend        | 3      | 8      |
-| catalog-service | 4      | 21     |
-| search-service  | 1      | 1      |
-| cart-service    | 1      | 1      |
+| frontend        | 6      | 21     |
+| catalog-service | 5      | 55     |
+| search-service  | 4      | 23     |
+| cart-service    | 4      | 33     |
 
 ### Schemas Prisma
 
@@ -259,10 +259,10 @@ As migrations Prisma ainda não foram executadas (`prisma migrate dev`). Requere
 
 Cole o prompt principal (regras do desafio + fluxo GATED + commits) junto com este plano e diga:
 
-> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 6 — SUBFASE A** (IMPLEMENTAR)."
+> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 7 — SUBFASE A** (IMPLEMENTAR)."
 
 O próximo chat deve:
 
 1. Ler `docs/PLANO-COMPLETO.md` para contexto completo
-2. Executar a SUBFASE A da ETAPA 6 (Frontend: Catálogo — infinite scroll + cache client-side)
+2. Executar a SUBFASE A da ETAPA 7 (Frontend: Busca — autocomplete + fuzzy UX consumindo o search-service)
 3. Seguir o fluxo GATED normalmente (A → B → C → D → E)
