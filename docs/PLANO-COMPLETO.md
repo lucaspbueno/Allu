@@ -160,15 +160,15 @@ npm run build
 - [x] SUBFASE D
 - [x] SUBFASE E
 
-### ETAPA 5 — Carrinho (persistência) + endpoints **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
+### ETAPA 5 — Carrinho (persistência) + endpoints
 
-- [ ] SUBFASE A
-- [ ] SUBFASE B
-- [ ] SUBFASE C
-- [ ] SUBFASE D
-- [ ] SUBFASE E
+- [x] SUBFASE A
+- [x] SUBFASE B
+- [x] SUBFASE C
+- [x] SUBFASE D
+- [x] SUBFASE E
 
-### ETAPA 6 — Frontend: Catálogo (infinite scroll + cache client-side)
+### ETAPA 6 — Frontend: Catálogo (infinite scroll + cache client-side) **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
 
 - [ ] SUBFASE A
 - [ ] SUBFASE B
@@ -259,10 +259,10 @@ As migrations Prisma ainda não foram executadas (`prisma migrate dev`). Requere
 
 Cole o prompt principal (regras do desafio + fluxo GATED + commits) junto com este plano e diga:
 
-> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 5 — SUBFASE A** (IMPLEMENTAR)."
+> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 6 — SUBFASE A** (IMPLEMENTAR)."
 
 O próximo chat deve:
 
 1. Ler `docs/PLANO-COMPLETO.md` para contexto completo
-2. Executar a SUBFASE A da ETAPA 5 (Carrinho: persistência + endpoints no cart-service)
+2. Executar a SUBFASE A da ETAPA 6 (Frontend: Catálogo — infinite scroll + cache client-side)
 3. Seguir o fluxo GATED normalmente (A → B → C → D → E)

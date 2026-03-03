@@ -2,13 +2,13 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Cart Service API",
-    "version": "0.2.0",
-    "description": "Serviço de carrinho de compras com Prisma + Postgres. Gerencia carrinhos por sessão com itens vinculados a produtos do catálogo."
+    "version": "0.3.0",
+    "description": "Serviço de carrinho de compras com Prisma + Postgres. Carrinhos por sessão; criar/obter carrinho, adicionar, alterar quantidade e remover itens."
   },
   "servers": [{ "url": "http://localhost:3003", "description": "Local dev" }],
   "tags": [
     { "name": "Health", "description": "Verificação de saúde do serviço" },
-    { "name": "Cart", "description": "Operações sobre o carrinho de compras (endpoints futuros)" }
+    { "name": "Cart", "description": "Operações sobre o carrinho de compras" }
   ],
   "paths": {
     "/health": {
@@ -33,43 +33,175 @@
           }
         }
       }
+    },
+    "/carts/{sessionId}": {
+      "get": {
+        "summary": "Obter ou criar carrinho",
+        "description": "Retorna o carrinho da sessão. Se não existir, cria um carrinho vazio e retorna.",
+        "tags": ["Cart"],
+        "operationId": "getOrCreateCart",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Carrinho (com items vazio ou preenchido)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Cart" }
+              }
+            }
+          },
+          "400": {
+            "description": "sessionId ausente ou vazio",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      }
+    },
+    "/carts/{sessionId}/items": {
+      "post": {
+        "summary": "Adicionar item ao carrinho",
+        "description": "Adiciona ou atualiza a quantidade do produto no carrinho (upsert por productId). Cria o carrinho se não existir.",
+        "tags": ["Cart"],
+        "operationId": "addItem",
+        "parameters": [
+          { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["productId", "name", "price"],
+                "properties": {
+                  "productId": { "type": "integer", "example": 1 },
+                  "name": { "type": "string", "example": "iPhone 15 Pro" },
+                  "price": { "type": "number", "example": 219.9 },
+                  "quantity": { "type": "integer", "default": 1, "minimum": 1, "example": 2 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Carrinho atualizado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } }
+          },
+          "400": {
+            "description": "Corpo inválido",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      }
+    },
+    "/carts/{sessionId}/items/{productId}": {
+      "patch": {
+        "summary": "Alterar quantidade do item",
+        "description": "Atualiza a quantidade do produto no carrinho. Use quantity 0 para efeito de remoção (ou use DELETE).",
+        "tags": ["Cart"],
+        "operationId": "updateItemQuantity",
+        "parameters": [
+          { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "productId", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "quantity": { "type": "integer", "minimum": 0, "example": 3 } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Carrinho atualizado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } }
+          },
+          "400": {
+            "description": "Parâmetros inválidos",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          },
+          "404": {
+            "description": "Carrinho ou item não encontrado",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remover item do carrinho",
+        "tags": ["Cart"],
+        "operationId": "removeItem",
+        "parameters": [
+          { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "productId", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Carrinho após remoção",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } }
+          },
+          "400": {
+            "description": "Parâmetros inválidos",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          },
+          "404": {
+            "description": "Carrinho ou item não encontrado",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
       "Cart": {
         "type": "object",
-        "description": "Carrinho de compras associado a uma sessão",
         "properties": {
-          "id": { "type": "integer", "example": 1 },
-          "sessionId": { "type": "string", "example": "sess_abc123" },
-          "items": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/CartItem" }
-          },
+          "id": { "type": "integer" },
+          "sessionId": { "type": "string" },
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/CartItem" } },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }
       },
       "CartItem": {
         "type": "object",
-        "description": "Item dentro de um carrinho",
         "properties": {
-          "id": { "type": "integer", "example": 1 },
-          "cartId": { "type": "integer", "example": 1 },
-          "productId": { "type": "integer", "example": 3 },
-          "name": { "type": "string", "example": "MacBook Air M3" },
-          "price": { "type": "string", "format": "decimal", "example": "349.90" },
-          "quantity": { "type": "integer", "example": 2 },
+          "id": { "type": "integer" },
+          "cartId": { "type": "integer" },
+          "productId": { "type": "integer" },
+          "name": { "type": "string" },
+          "price": { "type": "string", "format": "decimal" },
+          "quantity": { "type": "integer" },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }
       },
       "Error": {
         "type": "object",
-        "properties": {
-          "error": { "type": "string", "example": "Carrinho não encontrado" }
-        }
+        "properties": { "error": { "type": "string" } }
       }
     }
   }
