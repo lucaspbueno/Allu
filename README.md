@@ -94,7 +94,7 @@ cd services/cart-service && npm run dev
 cd apps/frontend && npm run dev
 ```
 
-Abre http://localhost:5173
+Abre http://localhost:5173. Rotas: `/` (Home) e `/catalog` (catálogo com infinite scroll). O catálogo consome a API do catalog-service; para desenvolvimento local, suba o catalog-service (e Postgres) e use a URL base padrão `http://localhost:3001` ou defina `VITE_CATALOG_API_URL` no `.env`.
 
 ## Docker
 
@@ -176,7 +176,7 @@ Cada serviço expõe a documentação OpenAPI 3.0 via Swagger UI no path `/api-d
 ## Testes
 
 - **Backend:** Jest + Supertest + jest-mock-extended (mock Prisma).
-- **Frontend:** Jest + React Testing Library (App, Layout, Home).
+- **Frontend:** Jest + React Testing Library (App, Layout, Home, Catalog, hooks, api/catalog).
 - Descrições dos testes em pt-BR (`describe` / `it`).
 
 Rodar todos os testes:
@@ -185,15 +185,15 @@ Rodar todos os testes:
 npm test
 ```
 
-### Cobertura de testes (Etapa 5)
+### Cobertura de testes (Etapa 6)
 
 | Workspace       | Suites | Testes  |
 | --------------- | ------ | ------- |
-| frontend        | 3      | 8       |
+| frontend        | 6      | 21      |
 | catalog-service | 5      | 55      |
 | search-service  | 4      | 23      |
 | cart-service    | 4      | 33      |
-| **Total**       | **16** | **119** |
+| **Total**       | **19** | **132** |
 
 ## Arquitetura de camadas (backend)
 
@@ -248,6 +248,13 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - Cart-service com endpoints de carrinho por sessão: GET (obter ou criar), POST items (adicionar/upsert), PATCH items/:productId (quantidade), DELETE items/:productId (remover item, soft delete).
 - Camadas repository → service → routes com DI; 119 testes no monorepo (33 no cart-service).
 - Ver `docs/ETAPA5.md` para resumo da Etapa 5.
+
+## Notas da Etapa 6
+
+- Frontend: página **Catálogo** (`/catalog`) consumindo o catalog-service; infinite scroll com `IntersectionObserver`; cache client-side (lista acumulada em state no hook `useCatalogInfinite`).
+- Config da API: `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`). Navegação com links Início e Catálogo no layout; layout e catálogo com safe area e alvos de toque ≥ 44px (mobile).
+- Testes: api/catalog, useCatalogInfinite, página Catalog; 132 testes no monorepo (21 no frontend).
+- Ver `docs/ETAPA6.md` para resumo da Etapa 6.
 
 ## Notas da Etapa 4
 
