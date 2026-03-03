@@ -19,6 +19,9 @@ export default function Layout({ children }: LayoutProps) {
           <Link to="/catalog" className="app-nav__link">
             Catálogo
           </Link>
+          <Link to="/search" className="app-nav__link">
+            Busca
+          </Link>
         </nav>
       </header>
       <main className="app-main">{children}</main>
