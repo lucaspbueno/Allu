@@ -15,6 +15,17 @@ services:
       timeout: 5s
       retries: 5
 
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.migrate
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   catalog-service:
     build:
       context: .
@@ -31,6 +42,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${CATALOG_PORT}/health"]
       interval: 10s
@@ -53,6 +67,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${SEARCH_PORT}/health"]
       interval: 10s
@@ -75,6 +92,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${CART_PORT}/health"]
       interval: 10s
@@ -86,11 +106,15 @@ services:
       context: .
       dockerfile: apps/frontend/Dockerfile
     ports:
-      - "80:80"
+      - "4173:4173"
     depends_on:
-      - catalog-service
-      - search-service
-      - cart-service
+      catalog-service:
+        condition: service_healthy
+      search-service:
+        condition: service_healthy
+      cart-service:
+        condition: service_healthy
+    restart: unless-stopped
 
   loki:
     image: grafana/loki:2.9.3
@@ -113,7 +137,9 @@ services:
       - app_logs:/var/log/app:ro
     command: -config.file=/etc/promtail/config.yml
     depends_on:
-      - loki
+      loki:
+        condition: service_healthy
+    restart: unless-stopped
 
   grafana:
     image: grafana/grafana:10.3.0
@@ -126,7 +152,9 @@ services:
     volumes:
       - ./infra/grafana/datasources:/etc/grafana/provisioning/datasources
     depends_on:
-      - loki
+      loki:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   postgres_data:

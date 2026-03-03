@@ -14,15 +14,20 @@ COPY apps/frontend/ ./
 
 RUN npm run build
 
-FROM nginx:alpine
+FROM node:20-alpine
 
-RUN addgroup -g 1001 -S app && adduser -u 1001 -S app -G app
+WORKDIR /app/apps/frontend
 
-COPY --from=builder /app/apps/frontend/dist /usr/share/nginx/html
-COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+RUN addgroup -g 1001 -S app && adduser -u 1001 -S app -G app && \
+    chown -R app:app /app
+
+COPY --from=builder --chown=app:app /app/apps/frontend/node_modules ./node_modules
+COPY --from=builder --chown=app:app /app/apps/frontend/dist ./dist
+COPY --from=builder --chown=app:app /app/apps/frontend/package.json ./
+COPY --from=builder --chown=app:app /app/apps/frontend/vite.config.ts ./
 
 USER app
 
-EXPOSE 80
+EXPOSE 4173
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "4173"]

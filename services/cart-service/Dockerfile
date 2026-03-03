@@ -20,13 +20,16 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache wget && addgroup -g 1001 -S app && adduser -u 1001 -S app -G app
+RUN apk add --no-cache wget openssl && addgroup -g 1001 -S app && adduser -u 1001 -S app -G app && \
+    mkdir -p /var/log/app && chown app:app /var/log/app
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json* ./
 
 RUN npm install --omit=dev
+
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 USER app
 

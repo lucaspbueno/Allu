@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+RUN apk add --no-cache openssl && npm install -g prisma@5 tsx
+
+WORKDIR /app
+
+COPY docker/prisma ./prisma
+COPY services/catalog-service/prisma/schema.prisma ./catalog-schema.prisma
+COPY services/catalog-service/prisma/seed.ts ./seed.ts
+
+RUN prisma generate --schema=./catalog-schema.prisma
+
+CMD ["sh", "-c", "\
+  prisma db push --schema=./prisma/schema.prisma --skip-generate && \
+  echo 'Migrações concluídas com sucesso' && \
+  tsx ./seed.ts && \
+  echo 'Seed concluído com sucesso'"]
