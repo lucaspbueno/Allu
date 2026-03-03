@@ -96,6 +96,10 @@ cd apps/frontend && npm run dev
 
 Abre http://localhost:5173. Rotas: `/` (Home), `/catalog` (catálogo com infinite scroll), `/search` (busca com autocomplete), `/produto/:id` (página do produto com carousel e preços) e `/cart` (carrinho persistente). O catálogo usa `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`); a busca usa `VITE_SEARCH_API_URL` (padrão `http://localhost:3002`); o carrinho usa `VITE_CART_API_URL` (padrão `http://localhost:3003`). Suba os serviços e Postgres para desenvolvimento local.
 
+### Frontend — Mobile e acessibilidade
+
+O frontend é **mobile-first**: viewport com `viewport-fit=cover` para safe area em dispositivos com notch; padding com `env(safe-area-inset-*)` no container, header e footer; alvos de toque ≥ 44px (2,75rem) em links e botões (navegação, busca, catálogo, produto, carrinho); estados `:active` para feedback tátil; carousel com swipe horizontal; dropdown da busca fecha ao toque fora. Layout responsivo com media queries a partir de 768px e 1024px.
+
 ## Docker
 
 Subir todos os serviços, frontend e stack de logs:
