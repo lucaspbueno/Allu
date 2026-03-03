@@ -176,15 +176,15 @@ npm run build
 - [x] SUBFASE D — Gates (lint, format:check, test, build); fix tipo mock Catalog.test
 - [x] SUBFASE E — README, docs/ETAPA6.md, plano atualizado
 
-### ETAPA 7 — Frontend: Busca (autocomplete + fuzzy UX) **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
+### ETAPA 7 — Frontend: Busca (autocomplete + fuzzy UX) (CONCLUÍDA)
 
-- [ ] SUBFASE A
-- [ ] SUBFASE B
-- [ ] SUBFASE C
-- [ ] SUBFASE D
-- [ ] SUBFASE E
+- [x] SUBFASE A — api/search, useSearchSuggestions, useSearchResults, página Search, rota /search, link Busca
+- [x] SUBFASE B — Testes: api/search, hooks, Search (pt-BR)
+- [x] SUBFASE C — Safe area, touch, dropdown mobile, form em coluna, touchstart para fechar
+- [x] SUBFASE D — Gates (lint, format:check, test, build) — todos passando
+- [x] SUBFASE E — README, docs/ETAPA7.md, plano atualizado
 
-### ETAPA 8 — Frontend: Página do produto (carousel + preços mensal/anual + imagens)
+### ETAPA 8 — Frontend: Página do produto (carousel + preços mensal/anual + imagens) **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
 
 - [ ] SUBFASE A
 - [ ] SUBFASE B
@@ -210,13 +210,13 @@ npm run build
 
 ---
 
-## ESTADO ATUAL DO CÓDIGO (ao final da Etapa 6)
+## ESTADO ATUAL DO CÓDIGO (ao final da Etapa 7)
 
-### Testes: 132 passando
+### Testes: 155 passando
 
 | Workspace       | Suites | Testes |
 | --------------- | ------ | ------ |
-| frontend        | 6      | 21     |
+| frontend        | 10     | 44     |
 | catalog-service | 5      | 55     |
 | search-service  | 4      | 23     |
 | cart-service    | 4      | 33     |
@@ -259,10 +259,10 @@ As migrations Prisma ainda não foram executadas (`prisma migrate dev`). Requere
 
 Cole o prompt principal (regras do desafio + fluxo GATED + commits) junto com este plano e diga:
 
-> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 7 — SUBFASE A** (IMPLEMENTAR)."
+> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 8 — SUBFASE A** (IMPLEMENTAR)."
 
 O próximo chat deve:
 
 1. Ler `docs/PLANO-COMPLETO.md` para contexto completo
-2. Executar a SUBFASE A da ETAPA 7 (Frontend: Busca — autocomplete + fuzzy UX consumindo o search-service)
+2. Executar a SUBFASE A da ETAPA 8 (Frontend: Página do produto — carousel, preços mensal/anual, imagens)
 3. Seguir o fluxo GATED normalmente (A → B → C → D → E)
