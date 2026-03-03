@@ -27,6 +27,7 @@ export default function ProductPage() {
       name: product.name,
       price: priceNum,
       quantity: 1,
+      imageUrl: product.imageUrl || undefined,
     })
       .then(() => {
         setAddMessage("Adicionado ao carrinho");

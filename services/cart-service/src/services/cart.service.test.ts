@@ -90,7 +90,7 @@ describe("CartService", () => {
 
       const result = await service.addItem("sess_abc", 10, "iPhone", 219.9, 2);
 
-      expect(mockRepository.upsertItem).toHaveBeenCalledWith(1, 10, "iPhone", 219.9, 2);
+      expect(mockRepository.upsertItem).toHaveBeenCalledWith(1, 10, "iPhone", 219.9, 2, undefined);
       expect(mockRepository.findBySessionId).toHaveBeenCalledTimes(2);
       expect(result).toEqual(fakeCart);
     });
@@ -101,7 +101,7 @@ describe("CartService", () => {
 
       await service.addItem("sess_abc", 5, "Produto", 10);
 
-      expect(mockRepository.upsertItem).toHaveBeenCalledWith(1, 5, "Produto", 10, 1);
+      expect(mockRepository.upsertItem).toHaveBeenCalledWith(1, 5, "Produto", 10, 1, undefined);
     });
   });
 

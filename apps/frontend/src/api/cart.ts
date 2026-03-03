@@ -12,6 +12,7 @@ export interface AddItemPayload {
   name: string;
   price: number;
   quantity?: number;
+  imageUrl?: string;
 }
 
 export async function addItem(sessionId: string, payload: AddItemPayload): Promise<Cart> {
@@ -20,6 +21,7 @@ export async function addItem(sessionId: string, payload: AddItemPayload): Promi
     name: payload.name,
     price: payload.price,
     quantity: payload.quantity ?? 1,
+    ...(payload.imageUrl && { imageUrl: payload.imageUrl }),
   };
   const res = await fetch(`${CART_API_BASE}/carts/${encodeURIComponent(sessionId)}/items`, {
     method: "POST",

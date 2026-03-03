@@ -23,7 +23,7 @@ export function createCartRoutes(
       res.status(400).json({ error: "sessionId é obrigatório" });
       return;
     }
-    const { productId, name, price, quantity } = req.body ?? {};
+    const { productId, name, price, quantity, imageUrl } = req.body ?? {};
     if (typeof productId !== "number" || typeof name !== "string" || typeof price !== "number") {
       res.status(400).json({
         error:
@@ -32,7 +32,8 @@ export function createCartRoutes(
       return;
     }
     const qty = Math.max(1, Math.floor(Number(quantity) || 1));
-    const cart = await cartService.addItem(sessionId, productId, name, price, qty);
+    const imgUrl = typeof imageUrl === "string" ? imageUrl : undefined;
+    const cart = await cartService.addItem(sessionId, productId, name, price, qty, imgUrl);
     res.status(200).json(cart);
   });
 

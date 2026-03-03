@@ -24,10 +24,11 @@ export class CartService {
     productId: number,
     name: string,
     price: number,
-    quantity: number = 1
+    quantity: number = 1,
+    imageUrl?: string | null
   ): Promise<CartWithItems> {
     const cart = await this.getOrCreateCart(sessionId);
-    await this.repository.upsertItem(cart.id, productId, name, price, quantity);
+    await this.repository.upsertItem(cart.id, productId, name, price, quantity, imageUrl);
     const updated = await this.repository.findBySessionId(sessionId);
     return updated!;
   }

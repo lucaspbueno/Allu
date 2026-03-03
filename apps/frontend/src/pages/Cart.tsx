@@ -58,6 +58,18 @@ export default function Cart() {
               const subtotal = Number.isNaN(priceNum) ? 0 : priceNum * item.quantity;
               return (
                 <li key={item.id} className="cart-item">
+                  {item.imageUrl && (
+                    <div className="cart-item__image-wrap">
+                      <Link to={`/produto/${item.productId}`} aria-hidden="true" tabIndex={-1}>
+                        <img
+                          src={item.imageUrl}
+                          alt=""
+                          className="cart-item__image"
+                          loading="lazy"
+                        />
+                      </Link>
+                    </div>
+                  )}
                   <div className="cart-item__info">
                     <Link to={`/produto/${item.productId}`} className="cart-item__name">
                       {item.name}

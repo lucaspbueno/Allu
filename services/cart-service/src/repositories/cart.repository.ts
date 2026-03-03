@@ -22,12 +22,13 @@ export class CartRepository {
     productId: number,
     name: string,
     price: number,
-    quantity: number = 1
+    quantity: number = 1,
+    imageUrl?: string | null
   ): Promise<CartItem> {
     return prisma.cartItem.upsert({
       where: { cartId_productId: { cartId, productId } },
-      create: { cartId, productId, name, price, quantity },
-      update: { quantity, deletedAt: null },
+      create: { cartId, productId, name, price, quantity, ...(imageUrl != null && { imageUrl }) },
+      update: { quantity, name, price, deletedAt: null, ...(imageUrl != null && { imageUrl }) },
     });
   }
 

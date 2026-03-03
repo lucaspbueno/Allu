@@ -54,7 +54,7 @@ describe("POST /carts/:sessionId/items", () => {
       .send({ productId: 5, name: "Produto X", price: 99.9, quantity: 2 });
 
     expect(res.status).toBe(200);
-    expect(mockService.addItem).toHaveBeenCalledWith("sess_abc", 5, "Produto X", 99.9, 2);
+    expect(mockService.addItem).toHaveBeenCalledWith("sess_abc", 5, "Produto X", 99.9, 2, undefined);
   });
 
   it("retorna 400 quando body não tem productId, name ou price", async () => {
@@ -76,7 +76,24 @@ describe("POST /carts/:sessionId/items", () => {
       .post("/carts/sess_abc/items")
       .send({ productId: 1, name: "Y", price: 5 });
 
-    expect(mockService.addItem).toHaveBeenCalledWith("sess_abc", 1, "Y", 5, 1);
+    expect(mockService.addItem).toHaveBeenCalledWith("sess_abc", 1, "Y", 5, 1, undefined);
+  });
+
+  it("passa imageUrl para addItem quando enviado no body", async () => {
+    const mockService = { addItem: jest.fn().mockResolvedValue(fakeCart) };
+
+    await request(createApp(mockService))
+      .post("/carts/sess_abc/items")
+      .send({ productId: 1, name: "Produto", price: 10, imageUrl: "https://exemplo.com/img.jpg" });
+
+    expect(mockService.addItem).toHaveBeenCalledWith(
+      "sess_abc",
+      1,
+      "Produto",
+      10,
+      1,
+      "https://exemplo.com/img.jpg"
+    );
   });
 });
 
