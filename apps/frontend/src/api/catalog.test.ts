@@ -1,4 +1,4 @@
-import { fetchProducts } from "./catalog";
+import { fetchProducts, fetchProductById } from "./catalog";
 
 jest.mock("@/config/api", () => ({ CATALOG_API_BASE: "http://test.api" }));
 
@@ -73,6 +73,46 @@ describe("api/catalog", () => {
       mockFetch.mockResolvedValueOnce({ ok: false });
 
       await expect(fetchProducts(1)).rejects.toThrow("Falha ao carregar produtos");
+    });
+  });
+
+  describe("fetchProductById", () => {
+    it("retorna o produto quando a API responde com sucesso", async () => {
+      const product = {
+        id: 5,
+        name: "Produto X",
+        description: "Descrição",
+        price: "99.90",
+        imageUrl: "/x.jpg",
+        category: "Y",
+        stock: 10,
+        active: true,
+        createdAt: "",
+        updatedAt: "",
+      };
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(product),
+      });
+
+      const result = await fetchProductById(5);
+
+      expect(result).toEqual(product);
+      expect(result.name).toBe("Produto X");
+      expect(mockFetch).toHaveBeenCalledWith("http://test.api/products/5");
+    });
+
+    it("lança erro quando o produto não existe (404)", async () => {
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 });
+
+      await expect(fetchProductById(999)).rejects.toThrow("Produto não encontrado");
+    });
+
+    it("lança erro quando a resposta não é ok", async () => {
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+
+      await expect(fetchProductById(1)).rejects.toThrow("Falha ao carregar produto");
     });
   });
 });

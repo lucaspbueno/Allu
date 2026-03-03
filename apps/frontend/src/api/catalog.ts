@@ -1,7 +1,14 @@
 import { CATALOG_API_BASE } from "@/config/api";
-import type { PaginatedProducts } from "@/types/product";
+import type { PaginatedProducts, Product } from "@/types/product";
 
 const PAGE_SIZE = 12;
+
+export async function fetchProductById(id: number): Promise<Product> {
+  const res = await fetch(`${CATALOG_API_BASE}/products/${id}`);
+  if (res.status === 404) throw new Error("Produto não encontrado");
+  if (!res.ok) throw new Error("Falha ao carregar produto");
+  return res.json();
+}
 
 export async function fetchProducts(
   page: number = 1,
