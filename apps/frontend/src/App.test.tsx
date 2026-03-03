@@ -5,6 +5,7 @@ import App from "./App";
 jest.mock("@/config/api", () => ({
   CATALOG_API_BASE: "http://localhost:3001",
   SEARCH_API_BASE: "http://localhost:3002",
+  CART_API_BASE: "http://localhost:3003",
 }));
 
 function renderWithRouter() {
