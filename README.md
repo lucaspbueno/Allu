@@ -132,6 +132,10 @@ npm test -w frontend
 npm run build -w frontend
 ```
 
+## CI (GitHub Actions)
+
+O workflow em `.github/workflows/ci.yml` roda em todo push e pull request para `main`/`master`: instala dependências (`npm ci`), executa **lint**, **format:check**, **test** e **build**. A versão do Node é definida em `.nvmrc` (20).
+
 ## Swagger / OpenAPI
 
 Cada serviço expõe a documentação OpenAPI 3.0 via Swagger UI no path `/api-docs`:
