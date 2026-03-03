@@ -57,7 +57,12 @@
               }
             }
           },
-          "400": { "description": "sessionId ausente ou vazio", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+          "400": {
+            "description": "sessionId ausente ou vazio",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
         }
       }
     },
@@ -88,8 +93,16 @@
           }
         },
         "responses": {
-          "200": { "description": "Carrinho atualizado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } } },
-          "400": { "description": "Corpo inválido", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+          "200": {
+            "description": "Carrinho atualizado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } }
+          },
+          "400": {
+            "description": "Corpo inválido",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
         }
       }
     },
@@ -114,9 +127,22 @@
           }
         },
         "responses": {
-          "200": { "description": "Carrinho atualizado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } } },
-          "400": { "description": "Parâmetros inválidos", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
-          "404": { "description": "Carrinho ou item não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+          "200": {
+            "description": "Carrinho atualizado",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } }
+          },
+          "400": {
+            "description": "Parâmetros inválidos",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          },
+          "404": {
+            "description": "Carrinho ou item não encontrado",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
         }
       },
       "delete": {
@@ -128,9 +154,22 @@
           { "name": "productId", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
         "responses": {
-          "200": { "description": "Carrinho após remoção", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } } },
-          "400": { "description": "Parâmetros inválidos", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
-          "404": { "description": "Carrinho ou item não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+          "200": {
+            "description": "Carrinho após remoção",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Cart" } } }
+          },
+          "400": {
+            "description": "Parâmetros inválidos",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          },
+          "404": {
+            "description": "Carrinho ou item não encontrado",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
         }
       }
     }

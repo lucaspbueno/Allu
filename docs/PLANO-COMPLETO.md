@@ -163,9 +163,9 @@ npm run build
 ### ETAPA 5 — Carrinho (persistência) + endpoints
 
 - [x] SUBFASE A
-- [ ] SUBFASE B
-- [ ] SUBFASE C
-- [ ] SUBFASE D
+- [x] SUBFASE B
+- [x] SUBFASE C
+- [x] SUBFASE D
 - [ ] SUBFASE E
 
 ### ETAPA 6 — Frontend: Catálogo (infinite scroll + cache client-side)
