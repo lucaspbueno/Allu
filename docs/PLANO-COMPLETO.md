@@ -160,9 +160,9 @@ npm run build
 - [x] SUBFASE D
 - [x] SUBFASE E
 
-### ETAPA 5 — Carrinho (persistência) + endpoints **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
+### ETAPA 5 — Carrinho (persistência) + endpoints
 
-- [ ] SUBFASE A
+- [x] SUBFASE A
 - [ ] SUBFASE B
 - [ ] SUBFASE C
 - [ ] SUBFASE D
