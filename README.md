@@ -94,7 +94,7 @@ cd services/cart-service && npm run dev
 cd apps/frontend && npm run dev
 ```
 
-Abre http://localhost:5173. Rotas: `/` (Home), `/catalog` (catálogo com infinite scroll), `/search` (busca com autocomplete) e `/produto/:id` (página do produto com carousel e preços). O catálogo usa `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`); a busca usa `VITE_SEARCH_API_URL` (padrão `http://localhost:3002`). Suba os serviços e Postgres para desenvolvimento local.
+Abre http://localhost:5173. Rotas: `/` (Home), `/catalog` (catálogo com infinite scroll), `/search` (busca com autocomplete), `/produto/:id` (página do produto com carousel e preços) e `/cart` (carrinho persistente). O catálogo usa `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`); a busca usa `VITE_SEARCH_API_URL` (padrão `http://localhost:3002`); o carrinho usa `VITE_CART_API_URL` (padrão `http://localhost:3003`). Suba os serviços e Postgres para desenvolvimento local.
 
 ## Docker
 
@@ -176,7 +176,7 @@ Cada serviço expõe a documentação OpenAPI 3.0 via Swagger UI no path `/api-d
 ## Testes
 
 - **Backend:** Jest + Supertest + jest-mock-extended (mock Prisma).
-- **Frontend:** Jest + React Testing Library (App, Layout, Home, Catalog, Search, ProductPage, ImageCarousel, hooks, api/catalog, api/search).
+- **Frontend:** Jest + React Testing Library (App, Layout, Home, Catalog, Search, ProductPage, Cart, ImageCarousel, hooks, api/catalog, api/search, api/cart).
 - Descrições dos testes em pt-BR (`describe` / `it`).
 
 Rodar todos os testes:
@@ -185,15 +185,15 @@ Rodar todos os testes:
 npm test
 ```
 
-### Cobertura de testes (Etapa 8)
+### Cobertura de testes (Etapa 9)
 
 | Workspace       | Suites | Testes  |
 | --------------- | ------ | ------- |
-| frontend        | 13     | 62      |
+| frontend        | 16     | 92      |
 | catalog-service | 5      | 55      |
 | search-service  | 4      | 23      |
 | cart-service    | 4      | 33      |
-| **Total**       | **26** | **173** |
+| **Total**       | **29** | **203** |
 
 ## Arquitetura de camadas (backend)
 
@@ -269,6 +269,13 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - UX mobile: safe area, link "Voltar" e botões/dots do carousel com alvo de toque ≥ 44px; swipe no carousel para trocar de imagem.
 - Testes: fetchProductById, useProduct, ImageCarousel, ProductPage; 173 testes no monorepo (62 no frontend).
 - Ver `docs/ETAPA8.md` para resumo da Etapa 8.
+
+## Notas da Etapa 9
+
+- Frontend: página **Carrinho** (`/cart`) consumindo o cart-service; sessionId persistido em localStorage; listagem de itens, alteração de quantidade e remoção; botão "Adicionar ao carrinho" na página do produto; variável `VITE_CART_API_URL` (padrão `http://localhost:3003`).
+- UX mobile: safe area, links e botões com alvo de toque ≥ 44px e estados `:active` na página do carrinho.
+- Testes: api/cart, useCart, página Cart, botão adicionar na ProductPage; 203 testes no monorepo (92 no frontend).
+- Ver `docs/ETAPA9.md` para resumo da Etapa 9.
 
 ## Notas da Etapa 4
 

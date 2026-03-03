@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import ProductPage from "./ProductPage";
 import { useProduct } from "@/hooks/useProduct";
@@ -6,8 +6,21 @@ import { useProduct } from "@/hooks/useProduct";
 jest.mock("@/config/api", () => ({
   CATALOG_API_BASE: "http://localhost:3001",
   SEARCH_API_BASE: "http://localhost:3002",
+  CART_API_BASE: "http://localhost:3003",
 }));
 jest.mock("@/hooks/useProduct");
+const mockAddItem = jest.fn();
+jest.mock("@/hooks/useCart", () => ({
+  useCart: () => ({
+    cart: null,
+    loading: false,
+    error: null,
+    refetch: jest.fn(),
+    addItem: mockAddItem,
+    updateQuantity: jest.fn(),
+    removeItem: jest.fn(),
+  }),
+}));
 
 const mockUseProduct = useProduct as jest.MockedFunction<typeof useProduct>;
 
@@ -36,6 +49,7 @@ function renderProductPage(routeId: string) {
 
 describe("ProductPage", () => {
   beforeEach(() => {
+    mockAddItem.mockReset();
     mockUseProduct.mockReturnValue({
       product: null,
       loading: false,
@@ -128,6 +142,46 @@ describe("ProductPage", () => {
       renderProductPage("42");
 
       expect(mockUseProduct).toHaveBeenCalledWith(42);
+    });
+
+    it("chama addItem ao clicar em Adicionar ao carrinho e exibe mensagem de sucesso", async () => {
+      mockAddItem.mockResolvedValueOnce(undefined);
+      mockUseProduct.mockReturnValue({
+        product: produtoFake,
+        loading: false,
+        error: null,
+      });
+
+      renderProductPage("1");
+
+      const botao = screen.getByRole("button", {
+        name: /adicionar ao carrinho/i,
+      });
+      fireEvent.click(botao);
+
+      expect(mockAddItem).toHaveBeenCalledWith({
+        productId: 1,
+        name: "Produto Teste",
+        price: 119.9,
+        quantity: 1,
+      });
+
+      expect(await screen.findByText("Adicionado ao carrinho")).toBeInTheDocument();
+    });
+
+    it("botão Adicionar ao carrinho está desabilitado quando estoque é zero", () => {
+      mockUseProduct.mockReturnValue({
+        product: { ...produtoFake, stock: 0 },
+        loading: false,
+        error: null,
+      });
+
+      renderProductPage("1");
+
+      const botao = screen.getByRole("button", {
+        name: /adicionar ao carrinho/i,
+      });
+      expect(botao).toBeDisabled();
     });
   });
 });

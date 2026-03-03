@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useProduct } from "@/hooks/useProduct";
+import { useCart } from "@/hooks/useCart";
 import { ImageCarousel } from "@/components/ImageCarousel";
 
 function formatPrice(value: number): string {
@@ -12,6 +14,26 @@ export default function ProductPage() {
   const { product, loading, error } = useProduct(
     numericId != null && !Number.isNaN(numericId) ? numericId : null
   );
+  const { addItem } = useCart();
+  const [addMessage, setAddMessage] = useState<string | null>(null);
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    const priceNum = parseFloat(product.price);
+    if (Number.isNaN(priceNum)) return;
+    setAddMessage(null);
+    addItem({
+      productId: product.id,
+      name: product.name,
+      price: priceNum,
+      quantity: 1,
+    })
+      .then(() => {
+        setAddMessage("Adicionado ao carrinho");
+        setTimeout(() => setAddMessage(null), 3000);
+      })
+      .catch(() => setAddMessage("Erro ao adicionar"));
+  };
 
   if (loading) {
     return (
@@ -79,6 +101,22 @@ export default function ProductPage() {
           {product.stock > 0 && (
             <p className="product-detail__stock">Disponível: {product.stock} un.</p>
           )}
+
+          <div className="product-detail__actions">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="product-detail__add-cart"
+              disabled={product.stock < 1}
+            >
+              Adicionar ao carrinho
+            </button>
+            {addMessage && (
+              <p className="product-detail__add-message" role="status">
+                {addMessage}
+              </p>
+            )}
+          </div>
         </div>
       </article>
     </div>
