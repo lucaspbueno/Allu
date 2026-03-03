@@ -2,16 +2,23 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Search Service API",
-    "version": "0.1.0",
-    "description": "Search and autocomplete service"
+    "version": "0.2.0",
+    "description": "Serviço de busca e autocomplete. Lê a tabela Product no Postgres (mesmo banco do catalog-service). Oferece sugestões ordenadas por relevância e busca full-text em nome e descrição, com cache em memória."
   },
+  "servers": [{ "url": "http://localhost:3002", "description": "Local dev" }],
+  "tags": [
+    { "name": "Health", "description": "Verificação de saúde do serviço" },
+    { "name": "Search", "description": "Autocomplete e busca de produtos" }
+  ],
   "paths": {
     "/health": {
       "get": {
         "summary": "Health check",
+        "tags": ["Health"],
+        "operationId": "getHealth",
         "responses": {
           "200": {
-            "description": "Service is healthy",
+            "description": "Serviço operacional",
             "content": {
               "application/json": {
                 "schema": {
@@ -24,6 +31,126 @@
               }
             }
           }
+        }
+      }
+    },
+    "/search/suggestions": {
+      "get": {
+        "summary": "Sugestões (autocomplete)",
+        "description": "Retorna sugestões de produtos para autocomplete. Busca por nome (contains case-insensitive) e ordena por relevância: exata > começa com > contém. Resultado cacheado em memória.",
+        "tags": ["Search"],
+        "operationId": "getSuggestions",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Texto de busca (mínimo 1 caractere após trim)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Máximo de sugestões (1–20, padrão 5)",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de sugestões (id, name, category)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/SuggestionItem" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/products": {
+      "get": {
+        "summary": "Buscar produtos",
+        "description": "Busca full-text em nome e descrição dos produtos ativos. Retorna resultado paginado. Resultado cacheado em memória.",
+        "tags": ["Search"],
+        "operationId": "searchProducts",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Texto de busca (mínimo 1 caractere após trim)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Página (padrão 1)",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Itens por página (1–100, padrão 20)",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado paginado (data, total, page, limit, totalPages)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SearchResult" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SuggestionItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "iPhone 15 Pro" },
+          "category": { "type": "string", "example": "Smartphones" }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          },
+          "total": { "type": "integer", "example": 3 },
+          "page": { "type": "integer", "example": 1 },
+          "limit": { "type": "integer", "example": 20 },
+          "totalPages": { "type": "integer", "example": 1 }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "type": "string", "format": "decimal" },
+          "imageUrl": { "type": "string", "format": "uri" },
+          "category": { "type": "string" },
+          "stock": { "type": "integer" },
+          "active": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
         }
       }
     }

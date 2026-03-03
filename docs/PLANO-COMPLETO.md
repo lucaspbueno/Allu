@@ -91,6 +91,7 @@ src/
 - SUBFASE C: `feat(frontend)`/`refactor(frontend)` (responsividade)
 - SUBFASE D: `fix`/`chore` (ajustes para gates passarem)
 - SUBFASE E: `docs`
+- **Idioma:** As mensagens dos commits sugeridos no resumo final de cada subfase devem estar em **português (pt-BR)**.
 
 ## FLUXO POR ETAPA (GATED)
 
@@ -119,7 +120,7 @@ npm run build
 2. Arquivos criados/alterados (paths)
 3. Conteúdo completo dos arquivos-chave (quando aplicável)
 4. Como validar localmente (comandos exatos)
-5. Commits sugeridos (mensagens exatas + ordem)
+5. Commits sugeridos (mensagens exatas + ordem, em pt-BR)
 6. Assumptions / Trade-offs
 7. Aguardando comando: "APROVAR SUBFASE X"
 
@@ -151,15 +152,15 @@ npm run build
 - [x] SUBFASE D
 - [x] SUBFASE E
 
-### ETAPA 4 — Busca (autocomplete + fuzzy) + endpoints **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
+### ETAPA 4 — Busca (autocomplete + fuzzy) + endpoints
 
-- [ ] SUBFASE A
-- [ ] SUBFASE B
-- [ ] SUBFASE C
-- [ ] SUBFASE D
-- [ ] SUBFASE E
+- [x] SUBFASE A
+- [x] SUBFASE B
+- [x] SUBFASE C
+- [x] SUBFASE D
+- [x] SUBFASE E
 
-### ETAPA 5 — Carrinho (persistência) + endpoints
+### ETAPA 5 — Carrinho (persistência) + endpoints **<-- PRÓXIMO PONTO DE PARTIDA (SUBFASE A)**
 
 - [ ] SUBFASE A
 - [ ] SUBFASE B
@@ -258,10 +259,10 @@ As migrations Prisma ainda não foram executadas (`prisma migrate dev`). Requere
 
 Cole o prompt principal (regras do desafio + fluxo GATED + commits) junto com este plano e diga:
 
-> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 4 — SUBFASE A** (IMPLEMENTAR)."
+> "Continuando o Desafio Técnico Allu. O plano atualizado está em `docs/PLANO-COMPLETO.md`. Execute a **ETAPA 5 — SUBFASE A** (IMPLEMENTAR)."
 
 O próximo chat deve:
 
 1. Ler `docs/PLANO-COMPLETO.md` para contexto completo
-2. Executar a SUBFASE A da ETAPA 4 (Busca: autocomplete + fuzzy no search-service)
+2. Executar a SUBFASE A da ETAPA 5 (Carrinho: persistência + endpoints no cart-service)
 3. Seguir o fluxo GATED normalmente (A → B → C → D → E)
