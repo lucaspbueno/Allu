@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validar configuração do workflow
+        run: npm run validate:workflow
+
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
