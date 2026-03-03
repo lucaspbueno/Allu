@@ -22,6 +22,9 @@ export default function Layout({ children }: LayoutProps) {
           <Link to="/search" className="app-nav__link">
             Busca
           </Link>
+          <Link to="/cart" className="app-nav__link">
+            Carrinho
+          </Link>
         </nav>
       </header>
       <main className="app-main">{children}</main>

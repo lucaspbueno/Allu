@@ -6,8 +6,20 @@ import { useProduct } from "@/hooks/useProduct";
 jest.mock("@/config/api", () => ({
   CATALOG_API_BASE: "http://localhost:3001",
   SEARCH_API_BASE: "http://localhost:3002",
+  CART_API_BASE: "http://localhost:3003",
 }));
 jest.mock("@/hooks/useProduct");
+jest.mock("@/hooks/useCart", () => ({
+  useCart: () => ({
+    cart: null,
+    loading: false,
+    error: null,
+    refetch: jest.fn(),
+    addItem: jest.fn(),
+    updateQuantity: jest.fn(),
+    removeItem: jest.fn(),
+  }),
+}));
 
 const mockUseProduct = useProduct as jest.MockedFunction<typeof useProduct>;
 
