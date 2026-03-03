@@ -11,6 +11,7 @@ COPY services/search-service/tsconfig.json ./
 
 RUN sed -i 's|../../tsconfig.base.json|./tsconfig.base.json|' tsconfig.json
 
+COPY services/search-service/prisma ./prisma
 COPY services/search-service/src ./src
 
 RUN npm run build
