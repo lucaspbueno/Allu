@@ -96,6 +96,10 @@ cd apps/frontend && npm run dev
 
 Abre http://localhost:5173. Rotas: `/` (Home), `/catalog` (catálogo com infinite scroll), `/search` (busca com autocomplete), `/produto/:id` (página do produto com carousel e preços) e `/cart` (carrinho persistente). O catálogo usa `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`); a busca usa `VITE_SEARCH_API_URL` (padrão `http://localhost:3002`); o carrinho usa `VITE_CART_API_URL` (padrão `http://localhost:3003`). Suba os serviços e Postgres para desenvolvimento local.
 
+### Frontend — Mobile e acessibilidade
+
+O frontend é **mobile-first**: viewport com `viewport-fit=cover` para safe area em dispositivos com notch; padding com `env(safe-area-inset-*)` no container, header e footer; alvos de toque ≥ 44px (2,75rem) em links e botões (navegação, busca, catálogo, produto, carrinho); estados `:active` para feedback tátil; carousel com swipe horizontal; dropdown da busca fecha ao toque fora. Layout responsivo com media queries a partir de 768px e 1024px.
+
 ## Docker
 
 Subir todos os serviços, frontend e stack de logs:
@@ -115,13 +119,14 @@ docker-compose up --build
 
 ## Scripts (raiz)
 
-| Comando                | Descrição                       |
-| ---------------------- | ------------------------------- |
-| `npm run lint`         | ESLint em todos os workspaces   |
-| `npm run format`       | Prettier — formata código       |
-| `npm run format:check` | Prettier — apenas verifica (CI) |
-| `npm test`             | Jest em todos os workspaces     |
-| `npm run build`        | Build de todos os workspaces    |
+| Comando                     | Descrição                                                  |
+| --------------------------- | ---------------------------------------------------------- |
+| `npm run lint`              | ESLint em todos os workspaces                              |
+| `npm run format`            | Prettier — formata código                                  |
+| `npm run format:check`      | Prettier — apenas verifica (CI)                            |
+| `npm test`                  | Jest em todos os workspaces                                |
+| `npm run build`             | Build de todos os workspaces                               |
+| `npm run validate:workflow` | Valida passos do workflow de CI (.github/workflows/ci.yml) |
 
 Para um único workspace (ex.: frontend):
 
@@ -131,6 +136,10 @@ npm run format:check -w frontend
 npm test -w frontend
 npm run build -w frontend
 ```
+
+## CI (GitHub Actions)
+
+O workflow em `.github/workflows/ci.yml` roda em todo push e pull request para `main`/`master`: instala dependências (`npm ci`), executa **lint**, **format:check**, **test** e **build**. A versão do Node é definida em `.nvmrc` (20).
 
 ## Swagger / OpenAPI
 
@@ -185,7 +194,7 @@ Rodar todos os testes:
 npm test
 ```
 
-### Cobertura de testes (Etapa 9)
+### Cobertura de testes (Etapa 10)
 
 | Workspace       | Suites | Testes  |
 | --------------- | ------ | ------- |
@@ -276,6 +285,13 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - UX mobile: safe area, links e botões com alvo de toque ≥ 44px e estados `:active` na página do carrinho.
 - Testes: api/cart, useCart, página Cart, botão adicionar na ProductPage; 203 testes no monorepo (92 no frontend).
 - Ver `docs/ETAPA9.md` para resumo da Etapa 9.
+
+## Notas da Etapa 10
+
+- **CI:** GitHub Actions em `.github/workflows/ci.yml` (push/PR em `main`/`master`): `npm ci`, lint, format:check, test, build; Node definido em `.nvmrc` (20).
+- **Validação do workflow:** script `scripts/validate-workflow.cjs` e passo no pipeline garantem que o YAML contém os comandos obrigatórios.
+- **Docs:** seção "Frontend — Mobile e acessibilidade" no README; documentação da Etapa 10 em `docs/ETAPA10.md`.
+- Ver `docs/ETAPA10.md` para resumo da Etapa 10.
 
 ## Notas da Etapa 4
 
