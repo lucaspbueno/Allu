@@ -94,7 +94,7 @@ cd services/cart-service && npm run dev
 cd apps/frontend && npm run dev
 ```
 
-Abre http://localhost:5173. Rotas: `/` (Home) e `/catalog` (catálogo com infinite scroll). O catálogo consome a API do catalog-service; para desenvolvimento local, suba o catalog-service (e Postgres) e use a URL base padrão `http://localhost:3001` ou defina `VITE_CATALOG_API_URL` no `.env`.
+Abre http://localhost:5173. Rotas: `/` (Home), `/catalog` (catálogo com infinite scroll) e `/search` (busca com autocomplete). O catálogo usa `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`); a busca usa `VITE_SEARCH_API_URL` (padrão `http://localhost:3002`). Suba os serviços e Postgres para desenvolvimento local.
 
 ## Docker
 
@@ -176,7 +176,7 @@ Cada serviço expõe a documentação OpenAPI 3.0 via Swagger UI no path `/api-d
 ## Testes
 
 - **Backend:** Jest + Supertest + jest-mock-extended (mock Prisma).
-- **Frontend:** Jest + React Testing Library (App, Layout, Home, Catalog, hooks, api/catalog).
+- **Frontend:** Jest + React Testing Library (App, Layout, Home, Catalog, Search, hooks, api/catalog, api/search).
 - Descrições dos testes em pt-BR (`describe` / `it`).
 
 Rodar todos os testes:
@@ -185,15 +185,15 @@ Rodar todos os testes:
 npm test
 ```
 
-### Cobertura de testes (Etapa 6)
+### Cobertura de testes (Etapa 7)
 
 | Workspace       | Suites | Testes  |
 | --------------- | ------ | ------- |
-| frontend        | 6      | 21      |
+| frontend        | 10     | 44      |
 | catalog-service | 5      | 55      |
 | search-service  | 4      | 23      |
 | cart-service    | 4      | 33      |
-| **Total**       | **19** | **132** |
+| **Total**       | **23** | **155** |
 
 ## Arquitetura de camadas (backend)
 
@@ -255,6 +255,13 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - Config da API: `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`). Navegação com links Início e Catálogo no layout; layout e catálogo com safe area e alvos de toque ≥ 44px (mobile).
 - Testes: api/catalog, useCatalogInfinite, página Catalog; 132 testes no monorepo (21 no frontend).
 - Ver `docs/ETAPA6.md` para resumo da Etapa 6.
+
+## Notas da Etapa 7
+
+- Frontend: página **Busca** (`/search`) consumindo o search-service; autocomplete com debounce (300 ms), dropdown de sugestões e resultados em grid; variável `VITE_SEARCH_API_URL` (padrão `http://localhost:3002`).
+- UX mobile: safe area, input e itens do dropdown com alvo de toque ≥ 44px, form em coluna no mobile, fechamento do dropdown ao toque fora (`touchstart` + `mousedown`).
+- Testes: api/search, useSearchSuggestions, useSearchResults, página Search; 155 testes no monorepo (44 no frontend).
+- Ver `docs/ETAPA7.md` para resumo da Etapa 7.
 
 ## Notas da Etapa 4
 
