@@ -6,6 +6,8 @@ import { useCatalogInfinite } from "@/hooks/useCatalogInfinite";
 jest.mock("@/config/api", () => ({ CATALOG_API_BASE: "http://localhost:3001" }));
 jest.mock("@/hooks/useCatalogInfinite");
 
+const mockUseCatalogInfinite = useCatalogInfinite as jest.MockedFunction<typeof useCatalogInfinite>;
+
 const produtoFake = {
   id: 1,
   name: "Produto Teste",
@@ -29,7 +31,7 @@ function renderCatalog() {
 
 describe("Catalog", () => {
   beforeEach(() => {
-    useCatalogInfinite.mockReturnValue({
+    mockUseCatalogInfinite.mockReturnValue({
       products: [],
       loading: true,
       hasMore: false,
@@ -40,7 +42,7 @@ describe("Catalog", () => {
 
   describe("renderização", () => {
     it("renderiza o título Catálogo", () => {
-      useCatalogInfinite.mockReturnValue({
+      mockUseCatalogInfinite.mockReturnValue({
         products: [],
         loading: false,
         hasMore: false,
@@ -60,7 +62,7 @@ describe("Catalog", () => {
     });
 
     it("exibe mensagem de erro quando error está preenchido", () => {
-      useCatalogInfinite.mockReturnValue({
+      mockUseCatalogInfinite.mockReturnValue({
         products: [],
         loading: false,
         hasMore: false,
@@ -74,7 +76,7 @@ describe("Catalog", () => {
     });
 
     it("exibe mensagem de lista vazia quando não há produtos e não está carregando", () => {
-      useCatalogInfinite.mockReturnValue({
+      mockUseCatalogInfinite.mockReturnValue({
         products: [],
         loading: false,
         hasMore: false,
@@ -88,7 +90,7 @@ describe("Catalog", () => {
     });
 
     it("renderiza os cards de produto quando há products", () => {
-      useCatalogInfinite.mockReturnValue({
+      mockUseCatalogInfinite.mockReturnValue({
         products: [produtoFake],
         loading: false,
         hasMore: false,
