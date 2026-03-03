@@ -119,13 +119,14 @@ docker-compose up --build
 
 ## Scripts (raiz)
 
-| Comando                | Descrição                       |
-| ---------------------- | ------------------------------- |
-| `npm run lint`         | ESLint em todos os workspaces   |
-| `npm run format`       | Prettier — formata código       |
-| `npm run format:check` | Prettier — apenas verifica (CI) |
-| `npm test`             | Jest em todos os workspaces     |
-| `npm run build`        | Build de todos os workspaces    |
+| Comando                     | Descrição                                                  |
+| --------------------------- | ---------------------------------------------------------- |
+| `npm run lint`              | ESLint em todos os workspaces                              |
+| `npm run format`            | Prettier — formata código                                  |
+| `npm run format:check`      | Prettier — apenas verifica (CI)                            |
+| `npm test`                  | Jest em todos os workspaces                                |
+| `npm run build`             | Build de todos os workspaces                               |
+| `npm run validate:workflow` | Valida passos do workflow de CI (.github/workflows/ci.yml) |
 
 Para um único workspace (ex.: frontend):
 
@@ -193,7 +194,7 @@ Rodar todos os testes:
 npm test
 ```
 
-### Cobertura de testes (Etapa 9)
+### Cobertura de testes (Etapa 10)
 
 | Workspace       | Suites | Testes  |
 | --------------- | ------ | ------- |
@@ -284,6 +285,13 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - UX mobile: safe area, links e botões com alvo de toque ≥ 44px e estados `:active` na página do carrinho.
 - Testes: api/cart, useCart, página Cart, botão adicionar na ProductPage; 203 testes no monorepo (92 no frontend).
 - Ver `docs/ETAPA9.md` para resumo da Etapa 9.
+
+## Notas da Etapa 10
+
+- **CI:** GitHub Actions em `.github/workflows/ci.yml` (push/PR em `main`/`master`): `npm ci`, lint, format:check, test, build; Node definido em `.nvmrc` (20).
+- **Validação do workflow:** script `scripts/validate-workflow.cjs` e passo no pipeline garantem que o YAML contém os comandos obrigatórios.
+- **Docs:** seção "Frontend — Mobile e acessibilidade" no README; documentação da Etapa 10 em `docs/ETAPA10.md`.
+- Ver `docs/ETAPA10.md` para resumo da Etapa 10.
 
 ## Notas da Etapa 4
 
