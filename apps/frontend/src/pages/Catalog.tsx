@@ -36,11 +36,14 @@ export default function Catalog() {
 
     if (!el) return;
 
+    /* rootMargin maior em viewports pequenas para carregar antes no scroll (mobile) */
+    const rootMargin = typeof window !== "undefined" && window.innerWidth < 768 ? "200px" : "100px";
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) loadMore();
       },
-      { rootMargin: "100px", threshold: 0 }
+      { rootMargin, threshold: 0 }
     );
 
     observer.observe(el);
