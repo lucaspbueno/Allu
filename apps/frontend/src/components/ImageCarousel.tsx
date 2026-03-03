@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface ImageCarouselProps {
   images: string[];
   alt: string;
 }
 
+const SWIPE_THRESHOLD = 50;
+
 export function ImageCarousel({ images, alt }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
+  const touchStartX = useRef<number | null>(null);
   const hasMultiple = images.length > 1;
 
   if (images.length === 0) {
@@ -20,9 +23,27 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
   const goPrev = () => setCurrent((i) => (i <= 0 ? images.length - 1 : i - 1));
   const goNext = () => setCurrent((i) => (i >= images.length - 1 ? 0 : i + 1));
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartX.current;
+    if (start == null || !hasMultiple) return;
+    const end = e.changedTouches[0].clientX;
+    const delta = start - end;
+    if (delta > SWIPE_THRESHOLD) goNext();
+    else if (delta < -SWIPE_THRESHOLD) goPrev();
+    touchStartX.current = null;
+  };
+
   return (
     <div className="product-carousel" role="region" aria-label="Galeria do produto">
-      <div className="product-carousel__viewport">
+      <div
+        className="product-carousel__viewport"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div
           className="product-carousel__track"
           style={{ transform: `translateX(-${current * 100}%)` }}
