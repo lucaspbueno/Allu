@@ -82,6 +82,9 @@ cd services/search-service && npm run dev
 ```bash
 cd services/cart-service && npm run dev
 # http://localhost:3003/health
+# http://localhost:3003/carts/sess_abc                    (obter ou criar carrinho)
+# http://localhost:3003/carts/sess_abc/items             (POST: adicionar item)
+# http://localhost:3003/carts/sess_abc/items/1           (PATCH: quantidade; DELETE: remover)
 # http://localhost:3003/api-docs
 ```
 
@@ -141,16 +144,20 @@ Cada serviço expõe a documentação OpenAPI 3.0 via Swagger UI no path `/api-d
 
 ### Endpoints documentados
 
-| Serviço | Endpoint               | Método | Descrição                                                  |
-| ------- | ---------------------- | ------ | ---------------------------------------------------------- |
-| Catalog | `/health`              | GET    | Health check                                               |
-| Catalog | `/products`            | GET    | Lista paginada — modo offset ou cursor; filtros variados   |
-| Catalog | `/products/:id`        | GET    | Produto por ID numérico (400/404); cache em memória        |
-| Catalog | `/products/categories` | GET    | Categorias distintas ordenadas; cache em memória           |
-| Search  | `/health`              | GET    | Health check                                               |
-| Search  | `/search/suggestions`  | GET    | Autocomplete (q, limit 1–20); cache em memória             |
-| Search  | `/search/products`     | GET    | Busca em nome/descrição (q, page, limit); cache em memória |
-| Cart    | `/health`              | GET    | Health check                                               |
+| Serviço | Endpoint                             | Método | Descrição                                                  |
+| ------- | ------------------------------------ | ------ | ---------------------------------------------------------- |
+| Catalog | `/health`                            | GET    | Health check                                               |
+| Catalog | `/products`                          | GET    | Lista paginada — modo offset ou cursor; filtros variados   |
+| Catalog | `/products/:id`                      | GET    | Produto por ID numérico (400/404); cache em memória        |
+| Catalog | `/products/categories`               | GET    | Categorias distintas ordenadas; cache em memória           |
+| Search  | `/health`                            | GET    | Health check                                               |
+| Search  | `/search/suggestions`                | GET    | Autocomplete (q, limit 1–20); cache em memória             |
+| Search  | `/search/products`                   | GET    | Busca em nome/descrição (q, page, limit); cache em memória |
+| Cart    | `/health`                            | GET    | Health check                                               |
+| Cart    | `/carts/:sessionId`                  | GET    | Obter ou criar carrinho (sempre 200)                       |
+| Cart    | `/carts/:sessionId/items`            | POST   | Adicionar item (body: productId, name, price, quantity?)   |
+| Cart    | `/carts/:sessionId/items/:productId` | PATCH  | Alterar quantidade (body: quantity)                        |
+| Cart    | `/carts/:sessionId/items/:productId` | DELETE | Remover item                                               |
 
 #### Filtros e parâmetros de `GET /products`
 
@@ -178,15 +185,15 @@ Rodar todos os testes:
 npm test
 ```
 
-### Cobertura de testes (Etapa 4)
+### Cobertura de testes (Etapa 5)
 
-| Workspace       | Suites | Testes |
-| --------------- | ------ | ------ |
-| frontend        | 3      | 8      |
-| catalog-service | 5      | 55     |
-| search-service  | 4      | 23     |
-| cart-service    | 1      | 1      |
-| **Total**       | **13** | **87** |
+| Workspace       | Suites | Testes  |
+| --------------- | ------ | ------- |
+| frontend        | 3      | 8       |
+| catalog-service | 5      | 55      |
+| search-service  | 4      | 23      |
+| cart-service    | 4      | 33      |
+| **Total**       | **16** | **119** |
 
 ## Arquitetura de camadas (backend)
 
@@ -235,6 +242,12 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 - `deletedAt: null` adicionado a todas as queries (suporte completo a soft delete).
 - 65 testes passando (55 no catalog-service, incluindo testes de cache).
 - Ver `docs/ETAPA3.md` para resumo da Etapa 3.
+
+## Notas da Etapa 5
+
+- Cart-service com endpoints de carrinho por sessão: GET (obter ou criar), POST items (adicionar/upsert), PATCH items/:productId (quantidade), DELETE items/:productId (remover item, soft delete).
+- Camadas repository → service → routes com DI; 119 testes no monorepo (33 no cart-service).
+- Ver `docs/ETAPA5.md` para resumo da Etapa 5.
 
 ## Notas da Etapa 4
 
