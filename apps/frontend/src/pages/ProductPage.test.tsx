@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import ProductPage from "./ProductPage";
 import { useProduct } from "@/hooks/useProduct";
@@ -157,13 +157,17 @@ describe("ProductPage", () => {
       const botao = screen.getByRole("button", {
         name: /adicionar ao carrinho/i,
       });
-      fireEvent.click(botao);
+      await act(async () => {
+        fireEvent.click(botao);
+        await Promise.resolve();
+      });
 
       expect(mockAddItem).toHaveBeenCalledWith({
         productId: 1,
         name: "Produto Teste",
         price: 119.9,
         quantity: 1,
+        imageUrl: "/img.jpg",
       });
 
       expect(await screen.findByText("Adicionado ao carrinho")).toBeInTheDocument();
