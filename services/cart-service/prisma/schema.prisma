@@ -1,12 +1,14 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../node_modules/.prisma/cart-client"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = "../node_modules/.prisma/cart-client"
+  binaryTargets   = ["debian-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["cart-schema"]
 }
 
 model Cart {
@@ -17,6 +19,7 @@ model Cart {
   updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
   deletedAt DateTime?  @map("deleted_at") @db.Timestamptz(3)
 
+  @@schema("cart-schema")
   @@map("Cart")
 }
 
@@ -34,6 +37,7 @@ model CartItem {
 
   cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
+  @@schema("cart-schema")
   @@unique([cartId, productId])
   @@map("CartItem")
 }
