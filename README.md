@@ -111,13 +111,13 @@ Subir todos os serviços, frontend e stack de logs:
 docker-compose up --build
 ```
 
-| Serviço        | URL (local)                                      |
+| Serviço        | URL (local)                                       |
 | -------------- | ------------------------------------------------- |
 | Frontend       | http://localhost:5173 (ou valor de FRONTEND_PORT) |
-| Catalog        | http://localhost:3002                            |
-| Search         | http://localhost:3003                            |
-| Cart           | http://localhost:3001                            |
-| Grafana (logs) | http://localhost:3000                            |
+| Catalog        | http://localhost:3002                             |
+| Search         | http://localhost:3003                             |
+| Cart           | http://localhost:3001                             |
+| Grafana (logs) | http://localhost:3000                             |
 | Postgres       | localhost:5432 (allu/allu)                        |
 
 As portas vêm do `.env` (use `.env.example` como base).

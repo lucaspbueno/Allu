@@ -87,7 +87,11 @@
                   "name": { "type": "string", "example": "iPhone 15 Pro" },
                   "price": { "type": "number", "example": 219.9 },
                   "quantity": { "type": "integer", "default": 1, "minimum": 1, "example": 2 },
-                  "imageUrl": { "type": "string", "format": "uri", "description": "URL da imagem do produto" }
+                  "imageUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL da imagem do produto"
+                  }
                 }
               }
             }
