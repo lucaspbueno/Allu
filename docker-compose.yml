@@ -1,5 +1,6 @@
 services:
   postgres:
+    container_name: db
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -11,39 +12,55 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
 
-  migrate:
+  cart-service:
+    container_name: cart
     build:
       context: .
-      dockerfile: docker/Dockerfile.migrate
+      dockerfile: services/cart-service/Dockerfile
+      args:
+        - CART_PORT=${CART_PORT}
+    ports:
+      - "${CART_PORT}:${CART_PORT}"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      PORT: ${CART_PORT}
+      LOG_LEVEL: ${LOG_LEVEL}
+      LOG_FILE: /var/log/app/cart.log
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=cart-schema
+    volumes:
+      - app_logs:/var/log/app
     depends_on:
       postgres:
         condition: service_healthy
-    restart: "no"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${CART_PORT}/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   catalog-service:
+    container_name: catalog
     build:
       context: .
       dockerfile: services/catalog-service/Dockerfile
+      args:
+        - CATALOG_PORT=${CATALOG_PORT}
     ports:
       - "${CATALOG_PORT}:${CATALOG_PORT}"
     environment:
       PORT: ${CATALOG_PORT}
       LOG_LEVEL: ${LOG_LEVEL}
       LOG_FILE: /var/log/app/catalog.log
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=catalog-schema
     volumes:
       - app_logs:/var/log/app
     depends_on:
       postgres:
         condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${CATALOG_PORT}/health"]
@@ -52,23 +69,24 @@ services:
       retries: 3
 
   search-service:
+    container_name: search
     build:
       context: .
       dockerfile: services/search-service/Dockerfile
+      args:
+        - SEARCH_PORT=${SEARCH_PORT}
     ports:
       - "${SEARCH_PORT}:${SEARCH_PORT}"
     environment:
       PORT: ${SEARCH_PORT}
       LOG_LEVEL: ${LOG_LEVEL}
       LOG_FILE: /var/log/app/search.log
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=search-schema
     volumes:
       - app_logs:/var/log/app
     depends_on:
       postgres:
         condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${SEARCH_PORT}/health"]
@@ -76,37 +94,20 @@ services:
       timeout: 5s
       retries: 3
 
-  cart-service:
-    build:
-      context: .
-      dockerfile: services/cart-service/Dockerfile
-    ports:
-      - "${CART_PORT}:${CART_PORT}"
-    environment:
-      PORT: ${CART_PORT}
-      LOG_LEVEL: ${LOG_LEVEL}
-      LOG_FILE: /var/log/app/cart.log
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    volumes:
-      - app_logs:/var/log/app
-    depends_on:
-      postgres:
-        condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:${CART_PORT}/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
   frontend:
+    container_name: frontend
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
+      args:
+        - FRONTEND_PORT=${FRONTEND_PORT}
+        - VITE_CART_API_URL=${VITE_CART_API_URL}
+        - VITE_CATALOG_API_URL=${VITE_CATALOG_API_URL}
+        - VITE_SEARCH_API_URL=${VITE_SEARCH_API_URL}
     ports:
-      - "4173:4173"
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
     depends_on:
       catalog-service:
         condition: service_healthy
