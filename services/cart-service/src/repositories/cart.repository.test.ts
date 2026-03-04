@@ -87,13 +87,23 @@ describe("CartRepository", () => {
     });
 
     it("inclui imageUrl no create e update quando informado", async () => {
-      mockedPrisma.cartItem.upsert.mockResolvedValue({ ...fakeItem, imageUrl: "https://img/1.jpg" });
+      mockedPrisma.cartItem.upsert.mockResolvedValue({
+        ...fakeItem,
+        imageUrl: "https://img/1.jpg",
+      });
 
       await repository.upsertItem(1, 10, "Produto X", 99.9, 2, "https://img/1.jpg");
 
       expect(mockedPrisma.cartItem.upsert).toHaveBeenCalledWith({
         where: { cartId_productId: { cartId: 1, productId: 10 } },
-        create: { cartId: 1, productId: 10, name: "Produto X", price: 99.9, quantity: 2, imageUrl: "https://img/1.jpg" },
+        create: {
+          cartId: 1,
+          productId: 10,
+          name: "Produto X",
+          price: 99.9,
+          quantity: 2,
+          imageUrl: "https://img/1.jpg",
+        },
         update: expect.objectContaining({ quantity: 2, imageUrl: "https://img/1.jpg" }),
       });
     });

@@ -191,9 +191,9 @@ describe("useCart", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => result.current.updateQuantity(999, 1))
-      ).rejects.toThrow("Item não encontrado no carrinho");
+      await expect(act(async () => result.current.updateQuantity(999, 1))).rejects.toThrow(
+        "Item não encontrado no carrinho"
+      );
     });
   });
 
@@ -226,9 +226,9 @@ describe("useCart", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => result.current.removeItem(10))
-      ).rejects.toThrow("Falha ao remover");
+      await expect(act(async () => result.current.removeItem(10))).rejects.toThrow(
+        "Falha ao remover"
+      );
     });
   });
 });

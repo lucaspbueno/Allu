@@ -54,7 +54,14 @@ describe("POST /carts/:sessionId/items", () => {
       .send({ productId: 5, name: "Produto X", price: 99.9, quantity: 2 });
 
     expect(res.status).toBe(200);
-    expect(mockService.addItem).toHaveBeenCalledWith("sess_abc", 5, "Produto X", 99.9, 2, undefined);
+    expect(mockService.addItem).toHaveBeenCalledWith(
+      "sess_abc",
+      5,
+      "Produto X",
+      99.9,
+      2,
+      undefined
+    );
   });
 
   it("retorna 400 quando body não tem productId, name ou price", async () => {
