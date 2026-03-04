@@ -9,6 +9,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  envDir: "../../",
   server: {
     port: Number(process.env.FRONTEND_PORT) || 5173,
   },
