@@ -5,9 +5,9 @@ Monorepo com microsserviços (Node.js + Express, TypeScript) e frontend (React +
 ## Estrutura
 
 - `apps/frontend` — React + Vite
-- `services/catalog-service` — Catálogo de produtos (porta 3001)
-- `services/search-service` — Busca (porta 3002)
-- `services/cart-service` — Carrinho (porta 3003)
+- `services/catalog-service` — Catálogo de produtos (porta 3002)
+- `services/search-service` — Busca (porta 3003)
+- `services/cart-service` — Carrinho (porta 3001)
 - `infra/` — Configurações Loki, Promtail, Grafana
 - `docs/` — Documentação adicional
 
@@ -38,7 +38,10 @@ docker-compose up -d postgres
 # catalog-service: gerar client, rodar migrations e seed
 npm run prisma:generate -w catalog-service
 npm run prisma:migrate -w catalog-service
-npm run prisma:seed -w catalog-service
+npm run prisma:seed:local -w catalog-service
+
+# search-service: só gerar client (lê do catalog-schema, sem migrations próprias)
+npm run prisma:generate -w search-service
 
 # cart-service: gerar client e rodar migrations
 npm run prisma:generate -w cart-service
@@ -61,31 +64,31 @@ Para evitar conflitos no monorepo, cada serviço gera o Prisma client em um dire
 
 ```bash
 cd services/catalog-service && npm run dev
-# http://localhost:3001/health
-# http://localhost:3001/products                              (lista paginada)
-# http://localhost:3001/products?search=mac&sortBy=price&order=asc
-# http://localhost:3001/products?minPrice=50&maxPrice=300
-# http://localhost:3001/products?cursor=5&limit=3            (modo cursor)
-# http://localhost:3001/products/1                           (produto por ID)
-# http://localhost:3001/products/categories                  (categorias)
-# http://localhost:3001/api-docs                             (Swagger)
+# http://localhost:3002/health
+# http://localhost:3002/products                              (lista paginada)
+# http://localhost:3002/products?search=mac&sortBy=price&order=asc
+# http://localhost:3002/products?minPrice=50&maxPrice=300
+# http://localhost:3002/products?cursor=5&limit=3            (modo cursor)
+# http://localhost:3002/products/1                           (produto por ID)
+# http://localhost:3002/products/categories                  (categorias)
+# http://localhost:3002/api-docs                             (Swagger)
 ```
 
 ```bash
 cd services/search-service && npm run dev
-# http://localhost:3002/health
-# http://localhost:3002/search/suggestions?q=iphone&limit=5   (autocomplete)
-# http://localhost:3002/search/products?q=apple&page=1&limit=10
-# http://localhost:3002/api-docs
+# http://localhost:3003/health
+# http://localhost:3003/search/suggestions?q=iphone&limit=5   (autocomplete)
+# http://localhost:3003/search/products?q=apple&page=1&limit=10
+# http://localhost:3003/api-docs
 ```
 
 ```bash
 cd services/cart-service && npm run dev
-# http://localhost:3003/health
-# http://localhost:3003/carts/sess_abc                    (obter ou criar carrinho)
-# http://localhost:3003/carts/sess_abc/items             (POST: adicionar item)
-# http://localhost:3003/carts/sess_abc/items/1           (PATCH: quantidade; DELETE: remover)
-# http://localhost:3003/api-docs
+# http://localhost:3001/health
+# http://localhost:3001/carts/sess_abc                    (obter ou criar carrinho)
+# http://localhost:3001/carts/sess_abc/items             (POST: adicionar item)
+# http://localhost:3001/carts/sess_abc/items/1           (PATCH: quantidade; DELETE: remover)
+# http://localhost:3001/api-docs
 ```
 
 ### Frontend
@@ -94,7 +97,7 @@ cd services/cart-service && npm run dev
 cd apps/frontend && npm run dev
 ```
 
-Abre http://localhost:5173. Rotas: `/` (Home), `/catalog` (catálogo com infinite scroll), `/search` (busca com autocomplete), `/produto/:id` (página do produto com carousel e preços) e `/cart` (carrinho persistente). O catálogo usa `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`); a busca usa `VITE_SEARCH_API_URL` (padrão `http://localhost:3002`); o carrinho usa `VITE_CART_API_URL` (padrão `http://localhost:3003`). Suba os serviços e Postgres para desenvolvimento local.
+Abre http://localhost:5173. Rotas: `/` (Home), `/catalog` (catálogo com infinite scroll), `/search` (busca com autocomplete), `/produto/:id` (página do produto com carousel e preços) e `/cart` (carrinho persistente). O catálogo usa `VITE_CATALOG_API_URL` (padrão `http://localhost:3002`); a busca usa `VITE_SEARCH_API_URL` (padrão `http://localhost:3003`); o carrinho usa `VITE_CART_API_URL` (padrão `http://localhost:3001`). Suba os serviços e Postgres para desenvolvimento local.
 
 ### Frontend — Mobile e acessibilidade
 
@@ -108,14 +111,16 @@ Subir todos os serviços, frontend e stack de logs:
 docker-compose up --build
 ```
 
-| Serviço        | URL (local)                |
-| -------------- | -------------------------- |
-| Frontend       | http://localhost:80        |
-| Catalog        | http://localhost:3001      |
-| Search         | http://localhost:3002      |
-| Cart           | http://localhost:3003      |
-| Grafana (logs) | http://localhost:3000      |
-| Postgres       | localhost:5432 (allu/allu) |
+| Serviço        | URL (local)                                      |
+| -------------- | ------------------------------------------------- |
+| Frontend       | http://localhost:5173 (ou valor de FRONTEND_PORT) |
+| Catalog        | http://localhost:3002                            |
+| Search         | http://localhost:3003                            |
+| Cart           | http://localhost:3001                            |
+| Grafana (logs) | http://localhost:3000                            |
+| Postgres       | localhost:5432 (allu/allu)                        |
+
+As portas vêm do `.env` (use `.env.example` como base).
 
 ## Scripts (raiz)
 
@@ -147,9 +152,9 @@ Cada serviço expõe a documentação OpenAPI 3.0 via Swagger UI no path `/api-d
 
 | Serviço | URL (dev)                      | Spec (arquivo)                              |
 | ------- | ------------------------------ | ------------------------------------------- |
-| Catalog | http://localhost:3001/api-docs | `services/catalog-service/src/openapi.json` |
-| Search  | http://localhost:3002/api-docs | `services/search-service/src/openapi.json`  |
-| Cart    | http://localhost:3003/api-docs | `services/cart-service/src/openapi.json`    |
+| Catalog | http://localhost:3002/api-docs | `services/catalog-service/src/openapi.json` |
+| Search  | http://localhost:3003/api-docs | `services/search-service/src/openapi.json`  |
+| Cart    | http://localhost:3001/api-docs | `services/cart-service/src/openapi.json`    |
 
 ### Endpoints documentados
 
@@ -201,8 +206,8 @@ npm test
 | frontend        | 16     | 92      |
 | catalog-service | 5      | 55      |
 | search-service  | 4      | 23      |
-| cart-service    | 4      | 33      |
-| **Total**       | **29** | **203** |
+| cart-service    | 4      | 35      |
+| **Total**       | **29** | **205** |
 
 ## Arquitetura de camadas (backend)
 
@@ -261,13 +266,13 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 ## Notas da Etapa 6
 
 - Frontend: página **Catálogo** (`/catalog`) consumindo o catalog-service; infinite scroll com `IntersectionObserver`; cache client-side (lista acumulada em state no hook `useCatalogInfinite`).
-- Config da API: `VITE_CATALOG_API_URL` (padrão `http://localhost:3001`). Navegação com links Início e Catálogo no layout; layout e catálogo com safe area e alvos de toque ≥ 44px (mobile).
+- Config da API: `VITE_CATALOG_API_URL` (padrão `http://localhost:3002`). Navegação com links Início e Catálogo no layout; layout e catálogo com safe area e alvos de toque ≥ 44px (mobile).
 - Testes: api/catalog, useCatalogInfinite, página Catalog; 132 testes no monorepo (21 no frontend).
 - Ver `docs/ETAPA6.md` para resumo da Etapa 6.
 
 ## Notas da Etapa 7
 
-- Frontend: página **Busca** (`/search`) consumindo o search-service; autocomplete com debounce (300 ms), dropdown de sugestões e resultados em grid; variável `VITE_SEARCH_API_URL` (padrão `http://localhost:3002`).
+- Frontend: página **Busca** (`/search`) consumindo o search-service; autocomplete com debounce (300 ms), dropdown de sugestões e resultados em grid; variável `VITE_SEARCH_API_URL` (padrão `http://localhost:3003`).
 - UX mobile: safe area, input e itens do dropdown com alvo de toque ≥ 44px, form em coluna no mobile, fechamento do dropdown ao toque fora (`touchstart` + `mousedown`).
 - Testes: api/search, useSearchSuggestions, useSearchResults, página Search; 155 testes no monorepo (44 no frontend).
 - Ver `docs/ETAPA7.md` para resumo da Etapa 7.
@@ -281,7 +286,7 @@ Com `docker-compose up`, os serviços escrevem logs em JSON (pino) para o volume
 
 ## Notas da Etapa 9
 
-- Frontend: página **Carrinho** (`/cart`) consumindo o cart-service; sessionId persistido em localStorage; listagem de itens, alteração de quantidade e remoção; botão "Adicionar ao carrinho" na página do produto; variável `VITE_CART_API_URL` (padrão `http://localhost:3003`).
+- Frontend: página **Carrinho** (`/cart`) consumindo o cart-service; sessionId persistido em localStorage; listagem de itens, alteração de quantidade e remoção; botão "Adicionar ao carrinho" na página do produto; variável `VITE_CART_API_URL` (padrão `http://localhost:3001`).
 - UX mobile: safe area, links e botões com alvo de toque ≥ 44px e estados `:active` na página do carrinho.
 - Testes: api/cart, useCart, página Cart, botão adicionar na ProductPage; 203 testes no monorepo (92 no frontend).
 - Ver `docs/ETAPA9.md` para resumo da Etapa 9.
