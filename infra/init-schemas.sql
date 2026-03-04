@@ -1,0 +1,2 @@
+CREATE SCHEMA IF NOT EXISTS "catalog-schema";
+CREATE SCHEMA IF NOT EXISTS "cart-schema";
