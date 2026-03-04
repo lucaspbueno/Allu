@@ -11,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(pinoHttp({ logger }));
+app.use("/search", searchRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
@@ -18,12 +19,10 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok", service: "search-service" });
 });
 
-app.use("/search", searchRoutes);
-
 export { app };
 
 if (process.env.NODE_ENV !== "test") {
-  const PORT = Number(process.env.PORT) || 3002;
+  const PORT = Number(process.env.SEARCH_PORT) || 3003;
 
   app.listen(PORT, () => {
     logger.info({ port: PORT }, "Search service listening");

@@ -1,12 +1,14 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../node_modules/.prisma/search-client"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = "../node_modules/.prisma/search-client"
+  binaryTargets   = ["debian-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["catalog-schema"]
 }
 
 model Product {
@@ -22,6 +24,7 @@ model Product {
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(3)
 
+  @@schema("catalog-schema")
   @@index([name])
   @@index([category])
   @@map("Product")
