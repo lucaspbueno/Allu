@@ -11,7 +11,7 @@
     "test": "jest",
     "build": "prisma generate && tsc",
     "prisma:generate": "dotenv -e ../../.env -- prisma generate",
-    "prisma:migrate": "dotenv -e ../../.env -- prisma migrate dev",
+    "prisma:migrate": "dotenv -e ../../.env -- prisma migrate deploy",
     "start": "sh entrypoint.sh",
     "dev": "dotenv -e ../../.env -- tsx watch src/index.ts"
   },

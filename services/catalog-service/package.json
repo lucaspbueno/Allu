@@ -11,7 +11,7 @@
     "test": "jest",
     "build": "prisma generate && tsc",
     "prisma:generate": "dotenv -e ../../.env -- prisma generate",
-    "prisma:migrate": "dotenv -e ../../.env -- prisma migrate dev",
+    "prisma:migrate": "dotenv -e ../../.env -- prisma migrate deploy",
     "prisma:seed:docker": "node dist/seed.js",
     "prisma:seed:local": "dotenv -e ../../.env -- tsx src/seed.ts",
     "start": "sh entrypoint.sh",
